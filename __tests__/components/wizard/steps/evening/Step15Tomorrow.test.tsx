@@ -38,7 +38,7 @@ describe("Step15Tomorrow - todayInOneSentence", () => {
 
     expect(mockFn).toHaveBeenCalledWith(
       "card-1",
-      expect.objectContaining({ todayInOneSentence: "Skupiony i cierpliwy." })
+      expect.objectContaining({ todayInOneSentence: "Skupiony i cierpliwy.", status: "COMPLETED" })
     )
   })
 })
