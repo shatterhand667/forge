@@ -1,3 +1,7 @@
+"use client"
+
+import { useEffect, useRef } from "react"
+
 export interface Column {
   id: string
   label: string
@@ -22,15 +26,21 @@ function AutoTextarea({
   value: string
   onChange: (v: string) => void
 }) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = el.scrollHeight + "px"
+  }, [value])
+
   return (
     <textarea
+      ref={ref}
       rows={1}
       value={value}
-      onChange={(e) => {
-        e.target.style.height = "auto"
-        e.target.style.height = e.target.scrollHeight + "px"
-        onChange(e.target.value)
-      }}
+      onChange={(e) => onChange(e.target.value)}
       className="w-full bg-transparent border-none outline-none"
       style={{
         fontSize: "var(--font-size-tiny)",
