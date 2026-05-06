@@ -58,6 +58,7 @@ model DailyCard {
   proudOf            String?
   ashamedOf          String?
   tomorrowRemember   String?
+  todayInOneSentence String?
   mentorComment      String?
   yesterdayMentorComment String?
 
