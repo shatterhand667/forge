@@ -43,7 +43,7 @@ export async function updateDailyCard(
     strengthsUsed: string; improvementWhen: string; improvementThen: string; improvementExtra: string
     mentalAfter: number; whatShapedIt: string; deliberatePractice: string
     processScore: number; pl: string; overallScore: number
-    proudOf: string; ashamedOf: string; tomorrowRemember: string
+    proudOf: string; ashamedOf: string; tomorrowRemember: string; todayInOneSentence: string
     setupsScore: number; executionScore: number; riskScore: number; psychologyScore: number; disciplineScore: number
     status: CardStatus
   }>
