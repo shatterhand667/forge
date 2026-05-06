@@ -1,0 +1,35 @@
+/* styles/tokens.css */
+:root {
+  /* Colors */
+  --color-dark:    #0d1f35;
+  --color-mid:     #1e3a5f;
+  --color-accent:  #1e3a5f;
+  --color-gold:    #c9963d;
+  --color-light:   #f5f6f7;
+  --color-white:   #ffffff;
+  --color-text:    #1a2332;
+  --color-muted:   #6b7280;
+  --color-border:  #d1d5db;
+  --color-bg:      #f9fafb;
+
+  /* Typography */
+  --font-family:        'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-header:   11px;
+  --font-size-label:    12px;
+  --font-size-body:     13px;
+  --font-size-tiny:     10px;
+  --font-weight-bold:   700;
+  --font-weight-medium: 500;
+
+  /* Layout */
+  --content-max-width:     700px;
+  --section-header-height: 30px;
+  --section-accent-stripe: 4px;
+  --radius-section-header: 3px;
+  --gap-between-sections:  20px;
+  --pad-section-top:       12px;
+  --pad-section-bottom:    12px;
+
+  /* Transitions */
+  --transition-fast: 120ms ease;
+}

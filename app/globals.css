@@ -1,10 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../styles/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Forge design system — maps CSS tokens to Tailwind utility classes */
+  --color-forge-dark:   var(--color-dark);
+  --color-forge-mid:    var(--color-mid);
+  --color-forge-gold:   var(--color-gold);
+  --color-forge-light:  var(--color-light);
+  --color-forge-muted:  var(--color-muted);
+  --color-forge-border: var(--color-border);
+  --color-forge-accent: var(--color-accent);
+  --max-w-content:      var(--content-max-width);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -123,6 +134,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-family);
+    background: var(--color-bg);
+    color: var(--color-text);
   }
   html {
     @apply font-sans;
