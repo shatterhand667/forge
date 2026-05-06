@@ -29,8 +29,6 @@ export default async function MorningStepPage({
   if (!session?.user?.id) redirect("/login")
 
   const card = await getOrCreateDailyCard(date)
-  if (card.status === "COMPLETED") redirect(`/cards/${date}/complete`)
-
   const bridge2Items = step === 5
     ? await getBridge2Items(session.user.id, new Date(date))
     : []

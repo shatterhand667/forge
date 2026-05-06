@@ -35,7 +35,6 @@ export default async function EveningStepPage({
 
   const card = await getDailyCard(date)
   if (!card) redirect(`/cards/${date}/morning/1`)
-  if (card.status === "COMPLETED") redirect(`/cards/${date}/complete`)
 
   const StepComponent = STEP_COMPONENTS[step as keyof typeof STEP_COMPONENTS]
   return <StepComponent card={card} date={date} step={step} />
