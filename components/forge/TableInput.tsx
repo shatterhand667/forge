@@ -33,14 +33,18 @@ function AutoTextarea({
     if (!el) return
     el.style.height = "auto"
     el.style.height = el.scrollHeight + "px"
-  }, [value])
+  }, []) // mount only — handles pre-filled data; typing is handled in onChange
 
   return (
     <textarea
       ref={ref}
       rows={1}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        e.target.style.height = "auto"
+        e.target.style.height = e.target.scrollHeight + "px"
+        onChange(e.target.value)
+      }}
       className="w-full bg-transparent border-none outline-none"
       style={{
         fontSize: "var(--font-size-tiny)",
@@ -109,7 +113,16 @@ export function TableInput({
                     <input
                       type={col.type ?? "text"}
                       value={String(row[col.id] ?? "")}
-                      onChange={(e) => onUpdateRow(i, col.id, e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value
+                        if (col.type === "number") {
+                          if (raw === "") return
+                          const num = parseFloat(raw)
+                          if (!isNaN(num)) onUpdateRow(i, col.id, num)
+                        } else {
+                          onUpdateRow(i, col.id, raw)
+                        }
+                      }}
                       className={`w-full bg-transparent border-none outline-none${col.type === "number" ? " no-spinner" : ""}`}
                       style={{ fontSize: "var(--font-size-tiny)" }}
                     />

@@ -31,8 +31,8 @@ export function Step7EmotionLog({ card, date, step }: Props) {
   async function handleUpdateRow(index: number, field: string, value: string | number) {
     const entry = entries[index]
     if (!entry) return
-    await updateEmotionEntry(entry.id, { [field]: String(value) } as any)
     setEntries((prev) => prev.map((e, i) => (i === index ? { ...e, [field]: value } : e)))
+    await updateEmotionEntry(entry.id, { [field]: String(value) } as any)
   }
 
   return (

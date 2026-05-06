@@ -37,8 +37,8 @@ export function Step6TradeLog({ card, date, step }: Props) {
   async function handleUpdateRow(index: number, field: string, value: string | number) {
     const trade = trades[index]
     if (!trade) return
-    await updateTrade(trade.id, { [field]: value } as any)
     setTrades((prev) => prev.map((t, i) => (i === index ? { ...t, [field]: value } : t)))
+    await updateTrade(trade.id, { [field]: value } as any)
   }
 
   return (
