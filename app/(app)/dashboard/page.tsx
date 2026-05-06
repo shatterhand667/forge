@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/db"
+import { getYesterdayLesson } from "@/lib/bridges"
 import { LessonBanner } from "@/components/dashboard/LessonBanner"
 import { CalendarView } from "@/components/dashboard/CalendarView"
 import { HistoryList } from "@/components/dashboard/HistoryList"
@@ -9,41 +10,41 @@ export default async function DashboardPage() {
   const session = await auth()
   const userId = session!.user.id
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const todayStr = today.toISOString().split("T")[0]
-
-  const todayCard = await prisma.dailyCard.findUnique({
-    where: { userId_date: { userId, date: today } },
-    select: { status: true, yesterdayLesson: true },
-  })
-
-  const lessonForBanner =
-    todayCard?.status === "MORNING" || todayCard?.status === "COMPLETED"
-      ? todayCard.yesterdayLesson
-      : null
-
+  // Use local date components to avoid UTC offset shifting "today" to yesterday
   const now = new Date()
-  const monthCards = await prisma.dailyCard.findMany({
-    where: {
-      userId,
-      date: {
-        gte: new Date(now.getFullYear(), now.getMonth(), 1),
-        lte: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-      },
-    },
-    select: { date: true, status: true },
-  })
+  const todayStr = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-")
+  const today = new Date(todayStr) // UTC midnight for local date — consistent with stored card dates
 
-  const recentCards = await prisma.dailyCard.findMany({
-    where: {
-      userId,
-      date: { lt: today },
-    },
-    select: { date: true, status: true },
-    orderBy: { date: "desc" },
-    take: 14,
-  })
+  const [todayCard, lessonForBanner] = await Promise.all([
+    prisma.dailyCard.findUnique({
+      where: { userId_date: { userId, date: today } },
+      select: { status: true },
+    }),
+    getYesterdayLesson(userId, today), // always fresh, not from stale stored bridge value
+  ])
+
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const daysInMonth = new Date(year, month, 0).getDate()
+  const monthStart = new Date(`${year}-${String(month).padStart(2, "0")}-01`)
+  const monthEnd = new Date(`${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`)
+
+  const [monthCards, recentCards] = await Promise.all([
+    prisma.dailyCard.findMany({
+      where: { userId, date: { gte: monthStart, lte: monthEnd } },
+      select: { date: true, status: true },
+    }),
+    prisma.dailyCard.findMany({
+      where: { userId, date: { lt: today } },
+      select: { date: true, status: true },
+      orderBy: { date: "desc" },
+      take: 14,
+    }),
+  ])
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
