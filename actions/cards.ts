@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
-import { getYesterdayLesson, getLastWeekLesson } from "@/lib/bridges"
+import { getYesterdayLesson, getLastWeekLesson, getYesterdayMentorComment } from "@/lib/bridges"
 import { revalidatePath } from "next/cache"
 import type { CardStatus } from "@prisma/client"
 
@@ -18,10 +18,11 @@ export async function getOrCreateDailyCard(dateStr: string) {
 
   const yesterdayLesson = await getYesterdayLesson(userId, date)
   const lastWeekLesson = await getLastWeekLesson(userId, date)
+  const yesterdayMentorComment = await getYesterdayMentorComment(userId, date)
 
   return prisma.dailyCard.upsert({
     where: { userId_date: { userId, date } },
-    create: { userId, date, yesterdayLesson, lastWeekLesson },
+    create: { userId, date, yesterdayLesson, lastWeekLesson, yesterdayMentorComment },
     update: {},
     include: {
       trades: { orderBy: { createdAt: "asc" } },
@@ -51,6 +52,14 @@ export async function updateDailyCard(
   if (!card) throw new Error("Card not found")
 
   await prisma.dailyCard.update({ where: { id }, data })
+  revalidatePath("/dashboard")
+}
+
+export async function updateMentorComment(id: string, mentorComment: string) {
+  const userId = await requireUser()
+  const card = await prisma.dailyCard.findFirst({ where: { id, userId } })
+  if (!card) throw new Error("Card not found")
+  await prisma.dailyCard.update({ where: { id }, data: { mentorComment } })
   revalidatePath("/dashboard")
 }
 
