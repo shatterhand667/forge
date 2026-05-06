@@ -61,7 +61,10 @@ export async function updateMentorComment(id: string, mentorComment: string) {
   const userId = await requireUser()
   const card = await prisma.dailyCard.findFirst({ where: { id, userId } })
   if (!card) throw new Error("Card not found")
-  await prisma.dailyCard.update({ where: { id }, data: { mentorComment } })
+  await prisma.dailyCard.update({
+    where: { id },
+    data: { mentorComment: mentorComment.trim() || null },
+  })
   revalidatePath("/dashboard")
   revalidatePath("/cards", "layout")
 }
