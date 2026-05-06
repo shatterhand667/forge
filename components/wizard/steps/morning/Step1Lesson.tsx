@@ -57,6 +57,31 @@ export function Step1Lesson({ card, date, step, bridge2Items }: Props) {
           )}
         </div>
 
+        {/* Mentor comment from yesterday */}
+        {card.yesterdayMentorComment && (
+          <div>
+            <BridgeIndicator source="komentarz mentora" />
+            <p
+              className="mb-2 font-medium uppercase tracking-wide"
+              style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}
+            >
+              KOMENTARZ MENTORA:
+            </p>
+            <p
+              className="px-4 py-3 rounded"
+              style={{
+                background: "var(--color-light)",
+                borderLeft: `3px solid var(--color-mid)`,
+                fontSize: "var(--font-size-body)",
+                color: "var(--color-text)",
+                fontStyle: "italic",
+              }}
+            >
+              {card.yesterdayMentorComment}
+            </p>
+          </div>
+        )}
+
         {/* Last week's lesson */}
         {card.lastWeekLesson && (
           <div>
