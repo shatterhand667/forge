@@ -37,3 +37,16 @@ export async function getBridge2Items(userId: string, date: Date): Promise<strin
   })
   return (weekly?.bridgePreMortemItems as string[]) ?? []
 }
+
+export async function getYesterdayMentorComment(userId: string, date: Date): Promise<string | null> {
+  const card = await prisma.dailyCard.findFirst({
+    where: {
+      userId,
+      date: { lt: date },
+      mentorComment: { not: null },
+    },
+    orderBy: { date: "desc" },
+    select: { mentorComment: true },
+  })
+  return card?.mentorComment ?? null
+}

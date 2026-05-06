@@ -8,7 +8,7 @@ vi.mock("@/lib/db", () => ({
 }))
 
 import { prisma } from "@/lib/db"
-import { getYesterdayLesson, getLastWeekLesson, getBridge2Items } from "@/lib/bridges"
+import { getYesterdayLesson, getLastWeekLesson, getBridge2Items, getYesterdayMentorComment } from "@/lib/bridges"
 
 describe("getYesterdayLesson", () => {
   beforeEach(() => vi.clearAllMocks())
@@ -71,5 +71,40 @@ describe("getBridge2Items", () => {
   it("returns empty array when no weekly review exists", async () => {
     vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue(null)
     expect(await getBridge2Items("user-1", new Date("2026-05-06"))).toEqual([])
+  })
+})
+
+describe("getYesterdayMentorComment", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns mentorComment from the most recent card with a comment", async () => {
+    vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue({
+      mentorComment: "Dobra robota z setupem A.",
+    } as any)
+
+    const result = await getYesterdayMentorComment("user-1", new Date("2026-05-06"))
+    expect(result).toBe("Dobra robota z setupem A.")
+  })
+
+  it("returns null when no card has a mentor comment", async () => {
+    vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue(null)
+
+    const result = await getYesterdayMentorComment("user-1", new Date("2026-05-06"))
+    expect(result).toBeNull()
+  })
+
+  it("queries only cards before the given date", async () => {
+    vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue(null)
+
+    await getYesterdayMentorComment("user-1", new Date("2026-05-06"))
+
+    expect(prisma.dailyCard.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          date: expect.objectContaining({ lt: new Date("2026-05-06") }),
+          mentorComment: { not: null },
+        }),
+      })
+    )
   })
 })
