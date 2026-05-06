@@ -9,14 +9,14 @@ import type { DailyCard, Trade } from "@prisma/client"
 
 const TRADE_COLUMNS = [
   { id: "time",      label: "Czas",    width: "7%" },
-  { id: "trigger",   label: "Trigger", width: "13%" },
-  { id: "setup",     label: "Setup",   width: "15%" },
-  { id: "direction", label: "Kier.",   width: "8%",  type: "select" as const, options: ["long", "short"] },
-  { id: "tier",      label: "Tier",    width: "8%",  type: "select" as const, options: ["A", "B", "C"] },
-  { id: "rExpected", label: "R plan.", width: "9%",  type: "number" as const },
-  { id: "rActual",   label: "R real.", width: "9%",  type: "number" as const },
-  { id: "emotion",   label: "Emocja",  width: "13%" },
-  { id: "lessons",   label: "Lekcje",  width: "18%" },
+  { id: "trigger",   label: "Trigger", width: "13%", type: "textarea" as const },
+  { id: "setup",     label: "Setup",   width: "15%", type: "textarea" as const },
+  { id: "direction", label: "Kier.",   width: "7%",  type: "select" as const, options: ["long", "short"] },
+  { id: "tier",      label: "Tier",    width: "7%",  type: "select" as const, options: ["A", "B", "C"] },
+  { id: "rExpected", label: "R plan.", width: "10%", type: "number" as const },
+  { id: "rActual",   label: "R real.", width: "10%", type: "number" as const },
+  { id: "emotion",   label: "Emocja",  width: "13%", type: "textarea" as const },
+  { id: "lessons",   label: "Lekcje",  width: "18%", type: "textarea" as const },
 ]
 
 interface Props {
