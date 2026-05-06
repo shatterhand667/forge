@@ -1,0 +1,137 @@
+{
+  "id": "04-quarterly-review",
+  "name": "Quarterly Identity Review",
+  "name_pl": "Przegląd kwartalny",
+  "frequency": "quarterly (end of Q1/Q2/Q3/Q4)",
+  "pages": 2,
+  "estimated_fill_time_minutes": { "total": 105 },
+  "title_bar": {
+    "title": "TRADING POD · QUARTERLY REVIEW",
+    "title_page_2": "TRADING POD · QUARTERLY PLAN",
+    "left_fields": [
+      { "id": "quarter", "label_pl": "Kwartał:", "type": "select", "options": ["Q1", "Q2", "Q3", "Q4"] },
+      { "id": "year", "label_pl": "Rok:", "type": "number" }
+    ],
+    "right_fields": [
+      { "id": "last_quarter_goal_recap", "label_pl": "CEL Z POPRZ. KWARTAŁU + ZREALIZOWANY?", "auto_populate_from": "previous_quarterly_review.process_goal_next_quarter" },
+      { "id": "what_i_expected", "label_pl": "CZEGO SIĘ SPODZIEWAŁEM PO TYM KWARTALE? (calibration)", "type": "text" }
+    ]
+  },
+  "sections": [
+    {
+      "id": 1,
+      "page": 1,
+      "title_pl": "Twarde dane — agregacja 3 miesięcy (kontekst, nie sedno)",
+      "type": "table",
+      "rows_count": 1,
+      "auto_calculate_from": "monthly_reviews in quarter",
+      "columns": [
+        { "id": "sessions", "label_pl": "Sesje" },
+        { "id": "trades", "label_pl": "Tradów" },
+        { "id": "win_rate", "label_pl": "Win rate" },
+        { "id": "avg_r", "label_pl": "Avg R" },
+        { "id": "profit_factor", "label_pl": "Profit factor" },
+        { "id": "net_pl", "label_pl": "Net P&L" },
+        { "id": "max_dd", "label_pl": "Max DD" },
+        { "id": "expectancy", "label_pl": "Expectancy" }
+      ],
+      "caption_pl": "Liczby są tylko kontekstem dla refleksji. Sedno tego dokumentu jest poniżej."
+    },
+    {
+      "id": 2,
+      "page": 1,
+      "title_pl": "Identity audit — kim się stałem przez 90 dni?",
+      "type": "two_part",
+      "parts": [
+        {
+          "intro_pl": "Trzy konkretne ZACHOWANIA, które 90 dni temu były OBCE, a teraz są MOJE (dowody zmiany):",
+          "type": "numbered_list",
+          "count": 3,
+          "lines_per_item": 2
+        },
+        {
+          "intro_pl": "Trzy konkretne ZACHOWANIA, które 90 dni temu były MOJE, a teraz nie są (dowody odpuszczenia):",
+          "type": "numbered_list",
+          "count": 3,
+          "lines_per_item": 2
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "page": 1,
+      "title_pl": "Mocne strony — które rozwinąłem w tym kwartale?",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 4,
+      "intro_pl": "Trzy moje signature strengths + konkretne sytuacje gdzie się ujawniły (nie deklaracje):"
+    },
+    {
+      "id": 4,
+      "page": 1,
+      "title_pl": "Słabości — których nie udało się zamknąć przez 90 dni",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 4,
+      "intro_pl": "Brutalna szczerość. Trzy powtarzające się luki — i co to mówi o mnie / o mojej pracy nad nimi:"
+    },
+    {
+      "id": 5,
+      "page": 2,
+      "title_pl": "Czy jestem bliżej tradera, którym chcę być?",
+      "fields": [
+        { "id": "subjective_progress", "label_pl": "Subiektywna ocena postępu (1 = jak 90 dni temu, 10 = jestem nim):", "type": "scale_row", "scale": [1, 10], "variant": "gold" },
+        { "id": "concrete_evidence", "label_pl": "Konkretne dowody postępu (lub jego braku):", "type": "textarea", "lines": 3 },
+        { "id": "what_pushed_forward", "label_pl": "Co najmocniej posunęło mnie do przodu w tym kwartale?", "type": "text" },
+        { "id": "what_set_back", "label_pl": "Co najmocniej mnie cofnęło?", "type": "text" }
+      ]
+    },
+    {
+      "id": 6,
+      "page": 2,
+      "title_pl": "Vision check — czy moja wizja siebie się zmieniła?",
+      "fields": [
+        { "id": "vision_evolution", "label_pl": "Czego chciałem 90 dni temu — czego chcę teraz. Co się zmieniło i dlaczego: ewolucja czy rezygnacja?", "type": "textarea", "lines": 5 }
+      ]
+    },
+    {
+      "id": 7,
+      "page": 2,
+      "title_pl": "Co wiem teraz o sobie jako traderze, czego nie wiedziałem 90 dni temu?",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 3,
+      "intro_pl": "Trzy insighty o sobie / swoim edge / swojej psychologii / o rynku:"
+    },
+    {
+      "id": 8,
+      "page": 2,
+      "title_pl": "Decyzje kierunkowe na następne 90 dni (start / continue / stop)",
+      "type": "three_columns",
+      "columns": [
+        { "id": "start", "label_pl": "ZACZYNAM (1-2 nowe rzeczy):", "type": "textarea", "lines": 7 },
+        { "id": "continue", "label_pl": "KONTYNUUJĘ (1-2 rzeczy):", "type": "textarea", "lines": 7 },
+        { "id": "stop", "label_pl": "KOŃCZĘ (1-2 rzeczy które przestają mi służyć):", "type": "textarea", "lines": 7 }
+      ]
+    },
+    {
+      "id": 9,
+      "page": 2,
+      "title_pl": "Cel kwartalny + kalibracja prawdopodobieństwa",
+      "fields": [
+        { "id": "process_goal_next_quarter", "label_pl": "Cel procesowy (mierzalny, sprawdzalny za 90 dni):", "type": "textarea", "lines": 2 },
+        { "id": "probability", "label_pl": "Prawdopodobieństwo że cel zrealizuję:", "type": "percent", "calibration_tracked": true },
+        { "id": "what_must_be_true", "label_pl": "Co musi być prawdą, żeby się udało?", "type": "text" }
+      ]
+    },
+    {
+      "id": 10,
+      "page": 2,
+      "title_pl": "List do siebie za 90 dni — otworzysz w przyszłym quarterly review",
+      "fields": [
+        { "id": "letter_to_self_90_days", "label_pl": "Dłuższa notatka. Co chcesz powiedzieć sobie za 3 miesiące? Przesłanie, ostrzeżenie, kierunek, wartość.", "type": "textarea", "lines": 11 }
+      ],
+      "display_in_next_review": true
+    }
+  ]
+}

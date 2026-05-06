@@ -1,0 +1,148 @@
+{
+  "id": "05-yearly-review",
+  "name": "Yearly Review",
+  "name_pl": "Przegląd roczny",
+  "frequency": "yearly (end of December / start of January)",
+  "pages": 2,
+  "estimated_fill_time_minutes": { "total": 150 },
+  "title_bar": {
+    "title": "TRADING POD · YEARLY REVIEW",
+    "title_page_2": "TRADING POD · YEARLY DIRECTION",
+    "left_fields": [
+      { "id": "year", "label_pl": "Rok:", "type": "number" }
+    ],
+    "right_fields": [
+      { "id": "last_year_goal_recap", "label_pl": "CEL ROCZNY Z POPRZ. ROKU + ZREALIZOWANY?", "auto_populate_from": "previous_yearly_review.process_goal_next_year" },
+      { "id": "what_i_expected", "label_pl": "CZEGO SIĘ SPODZIEWAŁEM PO TYM ROKU? (calibration)", "type": "text" }
+    ]
+  },
+  "sections": [
+    {
+      "id": 1,
+      "page": 1,
+      "title_pl": "Twarde dane roczne — agregacja 12 miesięcy",
+      "type": "table",
+      "rows_count": 1,
+      "auto_calculate_from": "monthly_reviews in year",
+      "columns": [
+        { "id": "sessions", "label_pl": "Sesje" },
+        { "id": "trades", "label_pl": "Tradów" },
+        { "id": "win_rate", "label_pl": "Win rate" },
+        { "id": "avg_r", "label_pl": "Avg R" },
+        { "id": "profit_factor", "label_pl": "Profit factor" },
+        { "id": "net_pl", "label_pl": "Net P&L" },
+        { "id": "max_dd", "label_pl": "Max DD" },
+        { "id": "expectancy", "label_pl": "Expectancy" },
+        { "id": "consistency", "label_pl": "Consist." },
+        { "id": "sharpe", "label_pl": "Sharpe", "formula": "annualized return / annualized stdev of daily R" }
+      ],
+      "caption_pl": "Liczby to początek refleksji. Sedno tego dokumentu jest pod nimi — w prawdzie o tym, kim się stałem."
+    },
+    {
+      "id": 2,
+      "page": 1,
+      "title_pl": "Trend roczny — 4 kwartały + zmiana",
+      "type": "table",
+      "auto_calculate_from": "quarterly_reviews in year",
+      "rows": ["Win rate", "Avg R", "Profit factor", "Net P&L"],
+      "columns": [
+        { "id": "q1", "label_pl": "Q1" },
+        { "id": "q2", "label_pl": "Q2" },
+        { "id": "q3", "label_pl": "Q3" },
+        { "id": "q4", "label_pl": "Q4" },
+        { "id": "trend", "label_pl": "Trend ↗→↘" },
+        { "id": "yoy_change", "label_pl": "Δ rok do roku" }
+      ]
+    },
+    {
+      "id": 3,
+      "page": 1,
+      "title_pl": "Kim byłem 12 miesięcy temu — kim jestem teraz?",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 5,
+      "intro_pl": "Trzy konkretne zmiany — każda z DOWODAMI (sytuacjami, w których to widać). Nie deklaracje."
+    },
+    {
+      "id": 4,
+      "page": 1,
+      "title_pl": "Najtrudniejszy moment roku — co z niego wziąłem?",
+      "fields": [
+        { "id": "hardest_moment", "label_pl": "Jeden moment. Co się wydarzyło, co czułem, co nauczyłem (nawet jeśli teraz wciąż boli):", "type": "textarea", "lines": 10 }
+      ]
+    },
+    {
+      "id": 5,
+      "page": 1,
+      "title_pl": "Najlepszy moment roku — co go stworzyło?",
+      "fields": [
+        { "id": "best_moment", "label_pl": "NIE największy P&L. Najgłębsze poczucie 'tak, jestem traderem'. Co się złożyło — żeby umieć odtworzyć:", "type": "textarea", "lines": 10 }
+      ]
+    },
+    {
+      "id": 6,
+      "page": 2,
+      "title_pl": "Bilans — bliżej czy dalej od celu życiowego jako trader?",
+      "fields": [
+        { "id": "subjective_balance", "label_pl": "Subiektywna ocena (1 = dużo dalej, 10 = znacząco bliżej):", "type": "scale_row", "scale": [1, 10], "variant": "gold" },
+        { "id": "brutal_justification", "label_pl": "Brutalne uzasadnienie — bez owijania w bawełnę:", "type": "textarea", "lines": 3 }
+      ]
+    },
+    {
+      "id": 7,
+      "page": 2,
+      "title_pl": "Trzy lekcje roku — które chcę pamiętać przez resztę życia",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 3,
+      "intro_pl": "Najbardziej transferowalne wnioski. Te, które będą ze mną za 5 i 10 lat:"
+    },
+    {
+      "id": 8,
+      "page": 2,
+      "title_pl": "Co najbardziej żałuję, że NIE zrobiłem w tym roku?",
+      "fields": [
+        { "id": "regret_review", "label_pl": "Stoicki regret review. Nie błędy popełnione — okazje przepuszczone, decyzje odłożone, rozmowy nieodbyte:", "type": "textarea", "lines": 3 }
+      ]
+    },
+    {
+      "id": 9,
+      "page": 2,
+      "title_pl": "Co próbowałem i NIE zadziałało — postmortem",
+      "fields": [
+        { "id": "failed_experiments", "label_pl": "Strategie, narzędzia, podejścia które wypróbowałem. Co rozumiem teraz że było złym pomysłem od początku?", "type": "textarea", "lines": 3 }
+      ]
+    },
+    {
+      "id": 10,
+      "page": 2,
+      "title_pl": "Decyzje strategiczne na nowy rok",
+      "fields": [
+        { "id": "radical_change", "label_pl": "RADYKALNIE ZMIENIAM (jeden duży krok):", "type": "textarea", "lines": 2 },
+        { "id": "continue", "label_pl": "KONTYNUUJĘ (dwie rzeczy które działają — nie ruszać):", "type": "textarea", "lines": 2 },
+        { "id": "definitively_stop", "label_pl": "KOŃCZĘ DEFINITYWNIE (jedna rzecz — bez nawrotu):", "type": "textarea", "lines": 2 }
+      ]
+    },
+    {
+      "id": 11,
+      "page": 2,
+      "title_pl": "Cel roczny + identity statement",
+      "fields": [
+        { "id": "process_goal_next_year", "label_pl": "Cel procesowy (mierzalny, sprawdzalny za 12 miesięcy):", "type": "text" },
+        { "id": "identity_statement", "label_pl": "Identity statement — KIM chcę być za 12 miesięcy:", "type": "textarea", "lines": 2, "displays_as_ambient_context": true },
+        { "id": "probability", "label_pl": "Prawdopodobieństwo że cel zrealizuję:", "type": "percent", "calibration_tracked": true },
+        { "id": "what_must_be_true", "label_pl": "Co musi być prawdą?", "type": "text" }
+      ]
+    },
+    {
+      "id": 12,
+      "page": 2,
+      "title_pl": "List do siebie za 12 miesięcy — kapsuła czasu",
+      "fields": [
+        { "id": "letter_to_self_12_months", "label_pl": "Trader, który zaczyna ten rok, pisze do tradera, który ten rok kończy. Co chce mu powiedzieć?", "type": "textarea", "lines": 9 }
+      ],
+      "display_in_next_review": true,
+      "framing": "time_capsule"
+    }
+  ]
+}

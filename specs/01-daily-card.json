@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "id": "01-daily-card",
+  "name": "Daily Card",
+  "name_pl": "Karta Dnia",
+  "description": "Daily reflection — pre-session planning + during-session log + post-session review.",
+  "frequency": "every trading day",
+  "estimated_fill_time_minutes": {
+    "page_1_morning": 15,
+    "page_2_evening": 35,
+    "total": 50
+  },
+  "pages": 2,
+  "title_bar": {
+    "title": "TRADING POD · DAILY CARD",
+    "title_page_2": "TRADING POD · DAILY REVIEW",
+    "left_fields": [
+      { "id": "date", "label_pl": "Data:", "label_en": "Date:", "type": "date", "required": true },
+      { "id": "market", "label_pl": "Rynek:", "label_en": "Market:", "type": "text" },
+      { "id": "session", "label_pl": "Sesja:", "label_en": "Session:", "type": "text" }
+    ],
+    "right_fields_page_1": [
+      {
+        "id": "yesterday_lesson",
+        "label_pl": "LEKCJA Z WCZORAJ:",
+        "label_en": "YESTERDAY'S LESSON:",
+        "type": "text",
+        "auto_populate": "previous_daily_card.tomorrow_remember",
+        "read_only_when_auto": true,
+        "lines": 1
+      },
+      {
+        "id": "last_week_lesson",
+        "label_pl": "LEKCJA Z POPRZ. TYGODNIA (Weekly Review):",
+        "label_en": "LAST WEEK'S LESSON (Weekly Review):",
+        "type": "text",
+        "auto_populate": "latest_weekly_review.bridge_strategic_topic",
+        "read_only_when_auto": true,
+        "lines": 1
+      }
+    ],
+    "right_fields_page_2": [
+      {
+        "id": "today_in_one_sentence",
+        "label_pl": "DZIŚ W JEDNYM ZDANIU:",
+        "label_en": "TODAY IN ONE SENTENCE:",
+        "type": "text",
+        "lines": 1
+      },
+      {
+        "id": "one_thing_surprised",
+        "label_pl": "JEDNA RZECZ Z TEGO TYGODNIA, KTÓRA ZASKOCZYŁA:",
+        "label_en": "ONE THING THIS WEEK THAT SURPRISED ME:",
+        "type": "text",
+        "lines": 1
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": 1,
+      "page": 1,
+      "title_pl": "Kontekst osobisty (rano)",
+      "title_en": "Personal context (morning)",
+      "description_pl": "Skanuj się przed sesją.",
+      "fields": [
+        { "id": "sleep", "label_pl": "Sen:", "label_en": "Sleep:", "type": "dot_row", "scale": [1, 5] },
+        { "id": "energy", "label_pl": "Energia:", "label_en": "Energy:", "type": "dot_row", "scale": [1, 5] },
+        { "id": "focus", "label_pl": "Fokus:", "label_en": "Focus:", "type": "dot_row", "scale": [1, 5] },
+        { "id": "prep_quality", "label_pl": "Przygot.:", "label_en": "Prep:", "type": "dot_row", "scale": [1, 5] },
+        { "id": "mood_notes", "label_pl": "Nastrój / uwagi:", "label_en": "Mood / notes:", "type": "textarea", "lines": 5 }
+      ]
+    },
+    {
+      "id": 2,
+      "page": 1,
+      "title_pl": "Kontekst rynkowy (rano)",
+      "title_en": "Market context (morning)",
+      "fields": [
+        { "id": "trend_bias", "label_pl": "Trend / bias:", "label_en": "Trend / bias:", "type": "text" },
+        { "id": "key_levels", "label_pl": "Kluczowe poziomy:", "label_en": "Key levels:", "type": "text" },
+        { "id": "macro_news", "label_pl": "Makro / news:", "label_en": "Macro / news:", "type": "text" },
+        { "id": "correlations", "label_pl": "Korelacje:", "label_en": "Correlations:", "type": "text" }
+      ]
+    },
+    {
+      "id": 3,
+      "page": 1,
+      "title_pl": "Plan dnia",
+      "title_en": "Daily plan",
+      "fields": [
+        { "id": "what_ifs", "label_pl": "Założenia (what ifs):", "label_en": "What ifs:", "type": "text" },
+        { "id": "entry_conditions", "label_pl": "Warunki wejścia:", "label_en": "Entry conditions:", "type": "text" },
+        { "id": "tier_a_setup", "label_pl": "Tier sizing — A-setup (100%):", "label_en": "Tier sizing — A-setup (100%):", "type": "text" },
+        { "id": "tier_b_setup", "label_pl": "Tier sizing — B-setup (50%):", "label_en": "Tier sizing — B-setup (50%):", "type": "text" },
+        { "id": "tier_c_setup", "label_pl": "Tier sizing — C-setup (25%):", "label_en": "Tier sizing — C-setup (25%):", "type": "text" },
+        {
+          "id": "pre_mortem",
+          "label_pl": "Pre-mortem (jakie moje typowe błędy mogą się dziś pojawić?):",
+          "label_en": "Pre-mortem (what typical mistakes of mine might show up today?):",
+          "type": "text",
+          "bridge_suggest_from": "latest_weekly_review.bridge_pre_mortem_items"
+        },
+        { "id": "daily_goal", "label_pl": "Cel dnia:", "label_en": "Daily goal:", "type": "text" }
+      ]
+    },
+    {
+      "id": 4,
+      "page": 1,
+      "title_pl": "Kluczowe zagrania (live)",
+      "title_en": "Key trades (live)",
+      "type": "table",
+      "min_rows": 14,
+      "allow_add_more": true,
+      "columns": [
+        { "id": "time", "label_pl": "Czas", "label_en": "Time", "type": "time", "width": 0.06 },
+        { "id": "trigger", "label_pl": "Trigger", "label_en": "Trigger", "type": "text", "width": 0.13 },
+        { "id": "setup", "label_pl": "Setup", "label_en": "Setup", "type": "text", "width": 0.18 },
+        { "id": "direction", "label_pl": "Kier.", "label_en": "Dir.", "type": "select", "options": ["L", "S"], "width": 0.05 },
+        { "id": "tier", "label_pl": "Tier", "label_en": "Tier", "type": "select", "options": ["A", "B", "C"], "width": 0.05 },
+        { "id": "r_expected", "label_pl": "R exp.", "label_en": "R exp.", "type": "number", "step": 0.1, "width": 0.06 },
+        { "id": "r_actual", "label_pl": "R akt.", "label_en": "R act.", "type": "number", "step": 0.1, "width": 0.06 },
+        { "id": "decision", "label_pl": "Decyzja", "label_en": "Decision", "type": "text", "width": 0.09 },
+        { "id": "emotion", "label_pl": "Emocja", "label_en": "Emotion", "type": "text", "width": 0.13 },
+        { "id": "lessons", "label_pl": "Wnioski", "label_en": "Lessons", "type": "text", "width": 0.19 }
+      ]
+    },
+    {
+      "id": 5,
+      "page": 1,
+      "title_pl": "Emocje jako dane (live)",
+      "title_en": "Emotions as data (live)",
+      "description_pl": "Emocje to sygnały informacyjne, nie wrogowie.",
+      "type": "table",
+      "min_rows": 9,
+      "allow_add_more": true,
+      "columns": [
+        { "id": "time", "label_pl": "Czas", "label_en": "Time", "type": "time", "width": 0.08 },
+        { "id": "emotion", "label_pl": "Emocja", "label_en": "Emotion", "type": "text", "width": 0.14 },
+        { "id": "trigger_context", "label_pl": "Trigger / kontekst", "label_en": "Trigger / context", "type": "text", "width": 0.32 },
+        { "id": "meaning_signal", "label_pl": "Znaczenie (sygnał)", "label_en": "Meaning (signal)", "type": "text", "width": 0.22 },
+        { "id": "reaction", "label_pl": "Reakcja / co zrobiłem", "label_en": "Reaction / what I did", "type": "text", "width": 0.24 }
+      ]
+    },
+    {
+      "id": 6,
+      "page": 2,
+      "title_pl": "Raport dnia — ocena obszarów",
+      "title_en": "Daily report — area scores",
+      "type": "table",
+      "areas": [
+        { "id": "setups", "label_pl": "Setupy", "label_en": "Setups" },
+        { "id": "execution", "label_pl": "Egzekucja", "label_en": "Execution" },
+        { "id": "risk_management", "label_pl": "Risk Management", "label_en": "Risk Management" },
+        { "id": "psychology", "label_pl": "Psychologia", "label_en": "Psychology" },
+        { "id": "discipline", "label_pl": "Dyscyplina", "label_en": "Discipline" }
+      ],
+      "columns": [
+        { "id": "area", "label_pl": "Obszar", "label_en": "Area", "type": "label", "width": 0.22 },
+        { "id": "score", "label_pl": "Ocena 1–5", "label_en": "Score 1–5", "type": "number", "min": 1, "max": 5, "width": 0.09 },
+        { "id": "comment", "label_pl": "Komentarz / obserwacje", "label_en": "Comment / observations", "type": "text", "width": 0.69 }
+      ],
+      "anchor_caption_pl": "Skala: 1 = naruszenie zasad · 3 = poprawnie ale automatycznie · 5 = świadomie i zgodnie z planem",
+      "anchor_caption_en": "Scale: 1 = rule violation · 3 = correct but automatic · 5 = conscious and aligned with plan",
+      "anchor_always_visible": true
+    },
+    {
+      "id": 7,
+      "page": 2,
+      "title_pl": "Mocne strony w akcji",
+      "title_en": "Strengths in action",
+      "fields": [
+        {
+          "id": "strengths_used",
+          "label_pl": "Której swojej mocnej strony użyłem dziś — i w jakiej konkretnej sytuacji?",
+          "label_en": "Which of my strengths did I use today — and in what specific situation?",
+          "type": "textarea",
+          "lines": 5
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "page": 2,
+      "title_pl": "Jedna rzecz do poprawy",
+      "title_en": "One thing to improve",
+      "type": "implementation_intention",
+      "fields": [
+        { "id": "improvement_when", "label_pl": "Kiedy", "label_en": "When", "type": "text" },
+        { "id": "improvement_then", "label_pl": "wtedy", "label_en": "then", "type": "text" },
+        { "id": "improvement_extra", "label_pl": "", "label_en": "", "type": "textarea", "lines": 4 }
+      ],
+      "rationale": "Implementation intention (Gollwitzer) — 'When X, then Y' is far more behaviorally effective than 'I'll try to'."
+    },
+    {
+      "id": 9,
+      "page": 2,
+      "title_pl": "Stan psychiczny po sesji (mental capital)",
+      "title_en": "Mental state after session (mental capital)",
+      "fields": [
+        { "id": "mental_after", "label_pl": "Stan po sesji:", "label_en": "After:", "type": "dot_row", "scale": [1, 5] },
+        {
+          "id": "what_shaped_it",
+          "label_pl": "Co go ukształtowało (co go wzmocniło / wyciągnęło)?",
+          "label_en": "What shaped it (what built it up / drained it)?",
+          "type": "textarea",
+          "lines": 4
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "page": 2,
+      "title_pl": "Deliberate practice (poza sesją)",
+      "title_en": "Deliberate practice (off-session)",
+      "fields": [
+        {
+          "id": "deliberate_practice",
+          "label_pl": "Co dziś zrobiłem dla swojego edge'a poza tradeingiem? (backtest / replay / lektura / drill)",
+          "label_en": "What did I do today for my edge outside of trading? (backtest / replay / reading / drill)",
+          "type": "textarea",
+          "lines": 5
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "page": 2,
+      "title_pl": "Ocena dnia",
+      "title_en": "Daily evaluation",
+      "fields": [
+        { "id": "process_score", "label_pl": "Ocena procesu (1–10):", "label_en": "Process score (1–10):", "type": "number", "min": 1, "max": 10 },
+        { "id": "pl", "label_pl": "P&L (pkt / %):", "label_en": "P&L (pts / %):", "type": "text" },
+        { "id": "overall_score", "label_pl": "Ogólna ocena:", "label_en": "Overall score:", "type": "gold_circles", "scale": [1, 5] },
+        {
+          "id": "tomorrow_remember",
+          "label_pl": "Jutro pamiętaj:",
+          "label_en": "Tomorrow remember:",
+          "type": "textarea",
+          "lines": 4,
+          "feeds_to": "next_daily_card.yesterday_lesson"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "page": 2,
+      "title_pl": "Tożsamość — czy ten dzień przybliżył mnie do tradera, którym chcę być?",
+      "title_en": "Identity — did this day move me closer to the trader I want to be?",
+      "fields": [
+        {
+          "id": "proud_of",
+          "label_pl": "Co zrobiłem dziś, czego trader którym chcę być byłby DUMNY?",
+          "label_en": "What did I do today that the trader I want to be would be PROUD of?",
+          "type": "textarea",
+          "lines": 6
+        },
+        {
+          "id": "ashamed_of",
+          "label_pl": "Co zrobiłem dziś, czego ten trader BY SIĘ WSTYDZIŁ?",
+          "label_en": "What did I do today that this trader would be ASHAMED of?",
+          "type": "textarea",
+          "lines": 6
+        }
+      ],
+      "rationale": "Identity-based habits (Atomic Habits). Two questions force the gap between ideal and current to be visible."
+    }
+  ]
+}

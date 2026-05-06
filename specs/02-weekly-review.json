@@ -1,0 +1,368 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "id": "02-weekly-review",
+  "name": "Weekly Review",
+  "name_pl": "Przegląd tygodniowy",
+  "description": "End-of-week aggregation, pattern analysis, and planning for next week.",
+  "frequency": "weekly (Friday evening or Sunday morning)",
+  "estimated_fill_time_minutes": { "page_1": 25, "page_2": 30, "total": 55 },
+  "pages": 2,
+  "title_bar": {
+    "title": "TRADING POD · WEEKLY REVIEW",
+    "title_page_2": "TRADING POD · WEEKLY PLAN",
+    "left_fields": [
+      { "id": "week_number", "label_pl": "Tydzień #", "label_en": "Week #", "type": "number" },
+      { "id": "week_start", "label_pl": "od:", "label_en": "from:", "type": "date" },
+      { "id": "week_end", "label_pl": "do:", "label_en": "to:", "type": "date" }
+    ],
+    "right_fields_page_1": [
+      {
+        "id": "last_week_goal_recap",
+        "label_pl": "CEL Z POPRZ. TYG. + ZREALIZOWANY?  /  CZEGO SIĘ SPODZIEWAŁEM PO TYM TYGODNIU?",
+        "label_en": "LAST WEEK'S GOAL + ACHIEVED?  /  WHAT DID I EXPECT FROM THIS WEEK?",
+        "type": "textarea",
+        "lines": 2,
+        "auto_populate_from": "previous_weekly_review.process_goal_next_week + previous_weekly_review.what_i_expected"
+      }
+    ],
+    "right_fields_page_2": [
+      {
+        "id": "one_sentence_summary",
+        "label_pl": "JEDNO ZDANIE PODSUMOWUJĄCE TEN TYDZIEŃ:",
+        "label_en": "ONE SENTENCE SUMMARIZING THIS WEEK:",
+        "type": "text",
+        "lines": 1
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": 1,
+      "page": 1,
+      "title_pl": "Statystyki tygodnia",
+      "title_en": "Weekly statistics",
+      "type": "table",
+      "auto_calculate_from": "daily_cards in week range",
+      "rows": [
+        { "id": "this_week", "label_pl": "Ten tydzień", "label_en": "This week" },
+        { "id": "last_week", "label_pl": "Poprzedni tydzień", "label_en": "Last week", "auto_from_previous": true },
+        { "id": "avg_4_weeks", "label_pl": "Średnia z 4 tyg.", "label_en": "4-week average", "auto_calculate": true }
+      ],
+      "columns": [
+        { "id": "trades", "label_pl": "Liczba tradów", "label_en": "# of trades", "type": "number", "auto": true },
+        { "id": "win_rate", "label_pl": "Win rate", "label_en": "Win rate", "type": "percent", "auto": true },
+        { "id": "avg_r", "label_pl": "Avg R", "label_en": "Avg R", "type": "number", "auto": true },
+        { "id": "profit_factor", "label_pl": "Profit factor", "label_en": "Profit factor", "type": "number", "auto": true },
+        { "id": "best_r", "label_pl": "Best (R)", "label_en": "Best (R)", "type": "number", "auto": true },
+        { "id": "worst_r", "label_pl": "Worst (R)", "label_en": "Worst (R)", "type": "number", "auto": true },
+        { "id": "max_dd", "label_pl": "Max DD", "label_en": "Max DD", "type": "number", "auto": true },
+        { "id": "net_pl", "label_pl": "Net P&L", "label_en": "Net P&L", "type": "text", "auto": true },
+        { "id": "sleep_avg", "label_pl": "Sen (avg h)", "label_en": "Sleep (avg h)", "type": "number", "auto_from": "daily_cards.sleep mapped to hours" }
+      ]
+    },
+    {
+      "id": 2,
+      "page": 1,
+      "title_pl": "Tier sizing — co naprawdę działa?",
+      "title_en": "Tier sizing — what really works?",
+      "type": "table",
+      "auto_calculate_from": "daily_cards.trades grouped by tier",
+      "rows": [
+        { "id": "a", "label": "A-setup (100%)" },
+        { "id": "b", "label": "B-setup (50%)" },
+        { "id": "c", "label": "C-setup (25%)" }
+      ],
+      "columns": [
+        { "id": "trades", "label_pl": "Liczba tradów", "label_en": "# of trades", "auto": true },
+        { "id": "win_rate", "label_pl": "Win rate", "auto": true },
+        { "id": "avg_r", "label_pl": "Avg R", "auto": true },
+        { "id": "net_r", "label_pl": "Net R", "auto": true },
+        { "id": "conclusion", "label_pl": "Wniosek (zwiększyć / zmniejszyć udział?)", "label_en": "Conclusion (increase / decrease share?)", "type": "text", "manual": true }
+      ]
+    },
+    {
+      "id": 3,
+      "page": 1,
+      "title_pl": "Dni tygodnia — heatmapa procesu",
+      "title_en": "Days of the week — process heatmap",
+      "type": "table",
+      "auto_calculate_from": "daily_cards in week",
+      "rows": [
+        { "id": "mon", "label_pl": "Poniedziałek", "label_en": "Monday" },
+        { "id": "tue", "label_pl": "Wtorek", "label_en": "Tuesday" },
+        { "id": "wed", "label_pl": "Środa", "label_en": "Wednesday" },
+        { "id": "thu", "label_pl": "Czwartek", "label_en": "Thursday" },
+        { "id": "fri", "label_pl": "Piątek", "label_en": "Friday" }
+      ],
+      "columns": [
+        { "id": "process_score", "label_pl": "Ocena procesu", "auto": true },
+        { "id": "pl_r", "label_pl": "P&L (R)", "auto": true },
+        { "id": "mental_state", "label_pl": "Mental state", "auto": true },
+        { "id": "observation", "label_pl": "Najważniejsza obserwacja", "type": "text", "manual": true }
+      ]
+    },
+    {
+      "id": 4,
+      "page": 1,
+      "title_pl": "Trend edge'a — 4 ostatnie tygodnie",
+      "title_en": "Edge trend — last 4 weeks",
+      "type": "table",
+      "auto_calculate_from": "previous 4 weekly_reviews",
+      "rows": [
+        { "id": "win_rate", "label": "Win rate" },
+        { "id": "avg_r", "label": "Avg R" },
+        { "id": "profit_factor", "label": "Profit factor" }
+      ],
+      "columns": [
+        { "id": "w_minus_4", "label_pl": "4 tyg. temu", "auto": true },
+        { "id": "w_minus_3", "label_pl": "3 tyg. temu", "auto": true },
+        { "id": "w_minus_2", "label_pl": "2 tyg. temu", "auto": true },
+        { "id": "w_minus_1", "label_pl": "Poprzedni", "auto": true },
+        { "id": "this_week", "label_pl": "Ten tydzień", "auto": true },
+        { "id": "trend", "label_pl": "Trend ↗ → ↘", "type": "select", "options": ["up", "flat", "down"], "auto": true }
+      ],
+      "caption_pl": "Czy edge rośnie, jest stabilny, czy degraduje? Cztery złe tygodnie z rzędu = sygnał do rewizji systemu.",
+      "caption_en": "Is the edge growing, stable, or degrading? Four bad weeks in a row = signal to revise the system."
+    },
+    {
+      "id": 5,
+      "page": 1,
+      "title_pl": "Najlepszy trade tygodnia — dlaczego zadziałał?",
+      "title_en": "Best trade of the week — why did it work?",
+      "fields": [
+        {
+          "id": "best_trade_why",
+          "label_pl": "Powodzenie nie dlatego, że zarobił — ale dlatego, że zachowałem się zgodnie z planem. Co konkretnie?",
+          "label_en": "Success not because it made money — but because I behaved according to plan. What exactly?",
+          "type": "textarea",
+          "lines": 6
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "page": 1,
+      "title_pl": "Najgorszy trade tygodnia — co poszło nie tak?",
+      "title_en": "Worst trade of the week — what went wrong?",
+      "fields": [
+        {
+          "id": "worst_trade_what_went_wrong",
+          "label_pl": "Nie chodzi o stratę. Chodzi o decyzję. Co dokładnie zrobiłem źle — i co czułem, zanim to zrobiłem?",
+          "type": "textarea",
+          "lines": 6
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "page": 1,
+      "title_pl": "Trzy konkretne lekcje z tygodnia",
+      "title_en": "Three concrete lessons from the week",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 1,
+      "intro_pl": "Nie ogólniki. Konkretne, transferowalne wnioski które zabierasz w przyszły tydzień:",
+      "intro_en": "No generalities. Concrete, transferable insights you take into next week:"
+    },
+    {
+      "id": 8,
+      "page": 1,
+      "title_pl": "Wdzięczność — pozytywny anchor tygodnia",
+      "title_en": "Gratitude — positive anchor of the week",
+      "fields": [
+        {
+          "id": "gratitude",
+          "label_pl": "Za co jestem wdzięczny w tym tygodniu (osobiste, niekoniecznie tradingowe — anchor pozytywny dla nervous systemu):",
+          "type": "textarea",
+          "lines": 3
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "page": 2,
+      "title_pl": "Pattern analysis — kiedy mój edge jest najmocniejszy?",
+      "title_en": "Pattern analysis — when is my edge strongest?",
+      "fields": [
+        {
+          "id": "pattern_when_strongest",
+          "label_pl": "Spójrz na wszystkie wygrywające trade'y. Co je łączy? (rynek, godzina, setup, kontekst makro, mój stan)",
+          "type": "textarea",
+          "lines": 4
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "page": 2,
+      "title_pl": "Powtarzające się błędy (≥2 razy w tym tygodniu)",
+      "title_en": "Repeating errors (≥2 times this week)",
+      "type": "table",
+      "min_rows": 4,
+      "allow_add_more": true,
+      "columns": [
+        { "id": "error", "label_pl": "Błąd", "label_en": "Error", "type": "text", "width": 0.26 },
+        { "id": "count", "label_pl": "Ile razy", "label_en": "# times", "type": "number", "width": 0.08 },
+        { "id": "trigger_context", "label_pl": "Trigger / kontekst", "type": "text", "width": 0.28 },
+        { "id": "cost_r", "label_pl": "Koszt (R)", "label_en": "Cost (R)", "type": "number", "width": 0.10 },
+        { "id": "elimination_plan", "label_pl": "Plan eliminacji", "label_en": "Elimination plan", "type": "text", "width": 0.28 }
+      ]
+    },
+    {
+      "id": 11,
+      "page": 2,
+      "title_pl": "Mental capital — odnawianie vs wyczerpywanie",
+      "title_en": "Mental capital — renewal vs depletion",
+      "type": "composite",
+      "elements": [
+        {
+          "type": "dots_per_day",
+          "label_pl": "Stan dzień po dniu:",
+          "auto_from": "daily_cards.mental_after",
+          "days": ["Pon", "Wt", "Śr", "Czw", "Pt"]
+        },
+        {
+          "type": "two_column",
+          "left": {
+            "label_pl": "ODNAWIAŁO mnie (rituals of renewal):",
+            "label_en": "RENEWED me (rituals of renewal):",
+            "id": "renewed_me",
+            "type": "textarea",
+            "lines": 4
+          },
+          "right": {
+            "label_pl": "WYCZERPYWAŁO mnie:",
+            "label_en": "DRAINED me:",
+            "id": "drained_me",
+            "type": "textarea",
+            "lines": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "page": 2,
+      "title_pl": "Identity check — gdzie byłem traderem, którym chcę być, a gdzie nie?",
+      "title_en": "Identity check — where was I the trader I want to be, and where not?",
+      "fields": [
+        {
+          "id": "identity_was_that_trader",
+          "label_pl": "Konkretne sytuacje, w których ZACHOWAŁEM SIĘ jak ten trader:",
+          "type": "textarea",
+          "lines": 3
+        },
+        {
+          "id": "identity_was_not",
+          "label_pl": "Sytuacje, w których NIE zachowałem się jak ten trader — co to mówi o luce?",
+          "type": "textarea",
+          "lines": 3
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "page": 2,
+      "title_pl": "Mapa zagrożeń przyszłego tygodnia (pre-mortem)",
+      "title_en": "Threats map for next week (pre-mortem)",
+      "fields": [
+        {
+          "id": "threats_map",
+          "label_pl": "Wydarzenia makro / kalendarzowe pułapki / osobiste obciążenia. Gdzie najprawdopodobniej zrobię błąd — i jak się obronić?",
+          "type": "textarea",
+          "lines": 4
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "page": 2,
+      "title_pl": "Most do Daily — co przenoszę do następnego tygodnia",
+      "title_en": "Bridge to Daily — what I carry into next week",
+      "rationale": "THE CRITICAL BRIDGE. Topic feeds Daily Card title bar; pre-mortem items feed Daily pre-mortem field.",
+      "fields": [
+        {
+          "id": "bridge_strategic_topic",
+          "label_pl": "Jeden temat do pogłębienia (strategiczny focus tygodnia):",
+          "type": "textarea",
+          "lines": 2,
+          "feeds_to": "daily_cards (next 5).last_week_lesson"
+        },
+        {
+          "id": "bridge_pre_mortem_items",
+          "label_pl": "Konkrety do pre-mortem w każdej Daily Card (2-3 błędy/wzorce z sekcji 10):",
+          "type": "numbered_list",
+          "count": 3,
+          "feeds_to": "daily_cards (next 5).pre_mortem suggested prefill"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "page": 2,
+      "title_pl": "Deliberate practice — rozliczenie + plan",
+      "title_en": "Deliberate practice — review + plan",
+      "fields": [
+        {
+          "id": "last_week_practice_recap",
+          "label_pl": "Plan z poprzedniego tygodnia: zrealizowano ___ z 3 zadań. Co poszło nie tak?",
+          "type": "composite",
+          "elements": [
+            { "id": "completed_count", "type": "number", "min": 0, "max": 3 },
+            { "id": "what_went_wrong", "type": "text" }
+          ]
+        },
+        {
+          "id": "practice_plan",
+          "type": "table",
+          "rows_count": 3,
+          "columns": [
+            { "id": "priority", "label_pl": "Priorytet", "type": "select", "options": ["MUST", "SHOULD"], "rule": "exactly 1 MUST" },
+            { "id": "task", "label_pl": "Zadanie (backtest / replay / drill / lektura)", "type": "text" },
+            { "id": "when", "label_pl": "Kiedy?", "type": "text" },
+            { "id": "how_measure", "label_pl": "Jak zmierzę?", "type": "text" }
+          ]
+        },
+        {
+          "id": "practice_meta",
+          "label_pl": "META: czy zaplanowane zadania (poprz. tydzień) były właściwe? Co powinienem był zrobić zamiast?",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "page": 2,
+      "title_pl": "Mentor · stop-loss · system check · cel",
+      "title_en": "Mentor · stop-loss · system check · goal",
+      "fields": [
+        {
+          "id": "mentor_topic",
+          "label_pl": "Top 1 rzecz do omówienia z mentorem / podem:",
+          "type": "text"
+        },
+        {
+          "id": "stop_loss_threshold",
+          "label_pl": "Mój próg automatycznego stopu (mental state X przez Y dni / strata Z R w tygodniu):",
+          "type": "text",
+          "rationale": "Pre-defined tilt threshold. App can parse and trigger alerts when crossed."
+        },
+        {
+          "id": "system_check",
+          "label_pl": "System check: czy moje narzędzia jeszcze pracują, czy stały się rytuałem? Co zmienić?",
+          "type": "text"
+        },
+        {
+          "id": "process_goal_next_week",
+          "label_pl": "Cel procesowy na przyszły tydzień (mierzalny, sprawdzalny za 7 dni):",
+          "type": "text",
+          "feeds_to": "next weekly_review.last_week_goal",
+          "calibration": {
+            "ask_probability": true,
+            "label_pl": "Prawdopodobieństwo realizacji: __%"
+          }
+        }
+      ]
+    }
+  ]
+}

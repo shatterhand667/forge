@@ -1,0 +1,120 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Trading Pod — Design System (CSS Tokens)
+   These are the exact values from the PDF design system, ported to CSS.
+   Use as :root variables in your stylesheet.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Colors ───────────────────────────────────────────────────────────── */
+  --color-dark: #1A1A2E;          /* Primary dark — text, deep backgrounds */
+  --color-mid: #16213E;           /* Section header background */
+  --color-accent: #0F3460;        /* Table column header background, numeric accents */
+  --color-gold: #E2B04A;          /* Accent stripe, golden circles, highlights */
+  --color-white: #FFFFFF;
+  --color-border: #AAAAAA;        /* Form field underlines, table borders */
+  --color-text: #1A1A2E;          /* Primary text */
+  --color-muted: #888888;         /* Field labels, secondary text */
+  --color-titlebg: #E8E8E5;       /* Title bar background — light gray, fillable */
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-family: 'DejaVu Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-italic: 'DejaVu Sans', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+
+  /* Type scale — designed for print densities, web should scale slightly larger */
+  /* PDF values shown for reference, web values for actual use */
+  --font-size-label: 12px;        /* PDF: 6.5pt — used for field labels, body */
+  --font-size-header: 13px;       /* PDF: 7.0pt — section header text */
+  --font-size-title: 22px;        /* PDF: 12.0pt — page title */
+  --font-size-tiny: 11px;         /* PDF: 5.5pt — captions, anchor descriptions */
+
+  /* Line height — baseline grid */
+  --line-height-base: 20px;       /* PDF: 11pt — strict baseline grid; in web 20px works */
+
+  /* ── Spacing ──────────────────────────────────────────────────────────── */
+  --pad-section-top: 14px;        /* PDF: 8pt — top padding inside section */
+  --pad-section-bottom: 8px;      /* PDF: 4pt — bottom padding inside section */
+  --pad-horizontal: 12px;         /* PDF: 6pt */
+  --gap-between-sections: 8px;    /* PDF: 4pt */
+
+  /* Page-level (less relevant on web but included for reference) */
+  --page-margin-left: 28px;       /* PDF: 14mm */
+  --page-margin-right: 28px;      /* PDF: 14mm */
+  --page-margin-top: 4px;         /* PDF: 2mm */
+  --page-margin-bottom: 4px;      /* PDF: 2mm */
+
+  /* ── Section dimensions ───────────────────────────────────────────────── */
+  --section-header-height: 22px;  /* PDF: 11pt */
+  --title-bar-height: 64px;       /* PDF: 18mm */
+  --section-accent-stripe: 3px;   /* Gold left bar inside section header */
+  --title-gold-stripe: 3px;       /* Gold top bar of title section */
+
+  /* ── Form elements ────────────────────────────────────────────────────── */
+  --input-border-color: var(--color-border);
+  --input-border-width: 0.5px;
+  --input-focus-color: var(--color-accent);
+  --input-padding: 4px 6px;
+
+  /* Dot row scale (1-5 ratings) */
+  --dot-radius: 8px;              /* PDF: 3.2pt at 120dpi ≈ 8px */
+  --dot-spacing: 22px;             /* spacing between dot centers */
+  --dot-stroke-color: var(--color-accent);
+  --dot-fill-color: var(--color-white);
+  --dot-active-fill: var(--color-accent);
+  --dot-active-text: var(--color-white);
+
+  /* Gold circles (overall score in Daily section 11) */
+  --gold-circle-radius: 10px;
+  --gold-circle-stroke: var(--color-gold);
+
+  /* ── Tables ───────────────────────────────────────────────────────────── */
+  --table-header-bg: var(--color-accent);
+  --table-header-text: var(--color-white);
+  --table-row-border: var(--color-border);
+  --table-row-border-width: 0.5px;
+  --table-cell-padding: 6px 8px;
+
+  /* ── Shadows / depth ──────────────────────────────────────────────────── */
+  --shadow-section: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* ── Border radius ────────────────────────────────────────────────────── */
+  --radius-section-header: 2px;   /* PDF: 1.5pt */
+  --radius-card: 4px;
+  --radius-input: 2px;
+
+  /* ── Transitions ──────────────────────────────────────────────────────── */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+/* ── Dark mode (optional) ────────────────────────────────────────────────── */
+/* Note: PDF version is light only. If you add dark mode for web,
+   keep the spirit: dark navy section headers, gold accents, easy-to-read body. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* These are suggestions. Adjust to taste. */
+    --color-text: #E8E8E5;
+    --color-muted: #888888;
+    /* Section headers can stay the same dark navy — they read well on dark too */
+    --color-titlebg: #2A2A3E;
+  }
+}
+
+/* ── Print styles — for direct printing of forms ─────────────────────────── */
+@media print {
+  :root {
+    /* Use exact PDF values for print */
+    --font-size-label: 6.5pt;
+    --font-size-header: 7pt;
+    --font-size-title: 12pt;
+    --font-size-tiny: 5.5pt;
+    --line-height-base: 11pt;
+  }
+
+  /* Remove web-only chrome */
+  nav, header, footer, .web-only {
+    display: none !important;
+  }
+}

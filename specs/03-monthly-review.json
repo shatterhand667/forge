@@ -1,0 +1,166 @@
+{
+  "id": "03-monthly-review",
+  "name": "Monthly Review",
+  "name_pl": "Przegląd miesięczny",
+  "frequency": "monthly",
+  "pages": 2,
+  "estimated_fill_time_minutes": { "total": 75 },
+  "title_bar": {
+    "title": "TRADING POD · MONTHLY REVIEW",
+    "title_page_2": "TRADING POD · MONTHLY PLAN",
+    "left_fields": [
+      { "id": "month", "label_pl": "Miesiąc:", "type": "select", "options": ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"] },
+      { "id": "year", "label_pl": "Rok:", "type": "number" }
+    ],
+    "right_fields": [
+      {
+        "id": "last_month_goal_recap",
+        "label_pl": "CEL Z POPRZ. MIESIĄCA + ZREALIZOWANY?",
+        "auto_populate_from": "previous_monthly_review.process_goal_next_month"
+      },
+      {
+        "id": "what_i_expected",
+        "label_pl": "CZEGO SIĘ SPODZIEWAŁEM PO TYM MIESIĄCU? (calibration)",
+        "type": "text"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": 1,
+      "page": 1,
+      "title_pl": "Statystyki miesiąca",
+      "type": "table",
+      "auto_calculate_from": "weekly_reviews in month",
+      "rows": [
+        { "id": "this_month", "label_pl": "Ten miesiąc" },
+        { "id": "last_month", "label_pl": "Poprzedni miesiąc", "auto_from_previous": true },
+        { "id": "avg_3_months", "label_pl": "Średnia z 3 mies.", "auto_calculate": true }
+      ],
+      "columns": [
+        { "id": "sessions", "label_pl": "Sesje", "auto": true },
+        { "id": "trades", "label_pl": "Tradów", "auto": true },
+        { "id": "win_rate", "label_pl": "Win rate", "auto": true },
+        { "id": "avg_r", "label_pl": "Avg R", "auto": true },
+        { "id": "profit_factor", "label_pl": "Profit factor", "auto": true },
+        { "id": "net_pl", "label_pl": "Net P&L", "auto": true },
+        { "id": "max_dd", "label_pl": "Max DD", "auto": true },
+        { "id": "expectancy", "label_pl": "Expectancy", "auto": true, "formula": "avg_r * win_rate" },
+        { "id": "consistency", "label_pl": "Consist. (% dni+)", "auto": true, "formula": "% of days with positive P&L" }
+      ],
+      "caption_pl": "Expectancy = avg R × win rate (oczekiwana wartość na trade). Consistency = % dni z dodatnim P&L."
+    },
+    {
+      "id": 2,
+      "page": 1,
+      "title_pl": "Trend kwartalny — 3 ostatnie miesiące",
+      "type": "table",
+      "auto_calculate_from": "previous 3 monthly_reviews",
+      "rows": ["Win rate", "Avg R", "Profit factor", "Net P&L"],
+      "columns": [
+        { "id": "m_minus_3", "label_pl": "3 mies. temu" },
+        { "id": "m_minus_2", "label_pl": "2 mies. temu" },
+        { "id": "m_minus_1", "label_pl": "Poprz. mies." },
+        { "id": "this_month", "label_pl": "Ten miesiąc" },
+        { "id": "trend", "label_pl": "Trend ↗→↘" }
+      ]
+    },
+    {
+      "id": 3,
+      "page": 1,
+      "title_pl": "Tier sizing — agregacja miesięczna + decyzje wdrożone?",
+      "type": "table",
+      "rows": ["A-setup (100%)", "B-setup (50%)", "C-setup (25%)", "Razem"],
+      "columns": [
+        { "id": "trades", "label_pl": "Liczba tradów", "auto": true },
+        { "id": "win_rate", "label_pl": "Win rate", "auto": true },
+        { "id": "avg_r", "label_pl": "Avg R", "auto": true },
+        { "id": "net_r", "label_pl": "Net R", "auto": true },
+        { "id": "decisions_implemented", "label_pl": "Decyzje z weekly wdrożone? (TAK/NIE/CZĘŚCIOWO)", "type": "select" }
+      ]
+    },
+    {
+      "id": 4,
+      "page": 1,
+      "title_pl": "Mapa edge'a — w jakich warunkach mój edge był najmocniejszy?",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 3,
+      "intro_pl": "Top 3 warunki gdzie mój edge dawał najwięcej R w tym miesiącu (rynek / godzina / setup / kontekst). Pierwsza linia: warunek. Następne: konkretne przykłady tradów."
+    },
+    {
+      "id": 5,
+      "page": 1,
+      "title_pl": "Top 3 błędy miesiąca — najdroższe po koszcie w R",
+      "type": "numbered_list",
+      "count": 3,
+      "lines_per_item": 3,
+      "intro_pl": "Trzy błędy które kosztowały Cię najwięcej R w tym miesiącu. Głębsza analiza niż w weekly — skąd się to bierze (głębsza warstwa)?"
+    },
+    {
+      "id": 6,
+      "page": 2,
+      "title_pl": "Wybór jednego błędu do eliminacji — plan 4-tygodniowy",
+      "fields": [
+        { "id": "selected_error", "label_pl": "Wybrany błąd (z top 3 powyżej):", "type": "text" },
+        { "id": "week_1_observe", "label_pl": "Tydz. 1 — OBSERWUJĘ:", "type": "text" },
+        { "id": "week_2_alarm", "label_pl": "Tydz. 2 — ALARM (świadomość w momencie):", "type": "text" },
+        { "id": "week_3_alternative", "label_pl": "Tydz. 3 — ALTERNATIVE BEHAVIOR (co robię zamiast):", "type": "text" },
+        { "id": "week_4_verify", "label_pl": "Tydz. 4 — WERYFIKACJA (czy ustąpił?):", "type": "text" }
+      ],
+      "feeds_to": "daily_cards (next 4 weeks).pre_mortem callout banner"
+    },
+    {
+      "id": 7,
+      "page": 2,
+      "title_pl": "Mental capital — wzorzec miesiąca",
+      "fields": [
+        { "id": "best_week", "label_pl": "Najlepszy tydzień miesiąca + dlaczego (co robiłem dobrze):", "type": "textarea", "lines": 2 },
+        { "id": "worst_week", "label_pl": "Najgorszy tydzień miesiąca + dlaczego (co poszło nie tak):", "type": "textarea", "lines": 2 }
+      ]
+    },
+    {
+      "id": 8,
+      "page": 2,
+      "title_pl": "Identity evolution — kim byłem 30 dni temu, kim jestem teraz?",
+      "fields": [
+        { "id": "behavioral_changes", "label_pl": "Konkretne zmiany w MOIM ZACHOWANIU vs 30 dni temu (nie deklaracje — obserwowalne czyny):", "type": "textarea", "lines": 4 },
+        { "id": "what_stopped_serving", "label_pl": "Co przestało mi służyć z tego, kim byłem? (przekonania, nawyki, obrony):", "type": "textarea", "lines": 4 }
+      ]
+    },
+    {
+      "id": 9,
+      "page": 2,
+      "title_pl": "Cele kwartalne — checkpoint",
+      "fields": [
+        { "id": "quarterly_progress", "label_pl": "Jeśli mam cel kwartalny: ile drogi zrobiłem? Czy nadal aktualny? Jeśli nie — co modyfikuję?", "type": "textarea", "lines": 4 }
+      ]
+    },
+    {
+      "id": 10,
+      "page": 2,
+      "title_pl": "System upgrade — co zmieniam w narzędziach na podstawie miesięcznego doświadczenia?",
+      "fields": [
+        { "id": "system_changes", "label_pl": "Konkretne zmiany w Daily Card / Weekly Review (co dodać, co usunąć, co zmodyfikować):", "type": "textarea", "lines": 4 }
+      ]
+    },
+    {
+      "id": 11,
+      "page": 2,
+      "title_pl": "List do siebie za 30 dni — otworzysz w przyszłym monthly review",
+      "fields": [
+        { "id": "letter_to_self", "label_pl": "Krótka notatka. Co chcesz powiedzieć sobie za 30 dni? Przesłanie, ostrzeżenie, intencja.", "type": "textarea", "lines": 7 }
+      ],
+      "display_in_next_review": true
+    },
+    {
+      "id": 12,
+      "page": 2,
+      "title_pl": "Cel na przyszły miesiąc + kalibracja prawdopodobieństwa",
+      "fields": [
+        { "id": "process_goal_next_month", "label_pl": "Cel procesowy (mierzalny, sprawdzalny za 30 dni):", "type": "textarea", "lines": 2 },
+        { "id": "probability", "label_pl": "Ile prawdopodobieństwa daję sobie, że ten cel zrealizuję?", "type": "percent", "calibration_tracked": true }
+      ]
+    }
+  ]
+}
