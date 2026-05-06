@@ -1,0 +1,138 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  password       String
+  createdAt      DateTime       @default(now())
+  dailyCards     DailyCard[]
+  weeklyReviews  WeeklyReview[]
+  calibrationGoals CalibrationGoal[]
+}
+
+model DailyCard {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date            DateTime    @db.Date
+  status          CardStatus  @default(MORNING)
+
+  // morning
+  sleep           Int?
+  energy          Int?
+  focus           Int?
+  prepQuality     Int?
+  moodNotes       String?
+  trendBias       String?
+  keyLevels       String?
+  macroNews       String?
+  correlations    String?
+  whatIfs         String?
+  entryConditions String?
+  tierASetup      String?
+  tierBSetup      String?
+  tierCSetup      String?
+  preMortem       String?
+  dailyGoal       String?
+  yesterdayLesson String?
+  lastWeekLesson  String?
+
+  // evening
+  strengthsUsed      String?
+  improvementWhen    String?
+  improvementThen    String?
+  improvementExtra   String?
+  mentalAfter        Int?
+  whatShapedIt       String?
+  deliberatePractice String?
+  processScore       Int?
+  pl                 String?
+  overallScore       Int?
+  proudOf            String?
+  ashamedOf          String?
+  tomorrowRemember   String?
+
+  // area scores (added for Step 8 of wizard)
+  setupsScore      Int?
+  executionScore   Int?
+  riskScore        Int?
+  psychologyScore  Int?
+  disciplineScore  Int?
+
+  trades         Trade[]
+  emotionEntries EmotionEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+enum CardStatus {
+  MORNING
+  COMPLETED
+}
+
+model Trade {
+  id          String    @id @default(cuid())
+  dailyCardId String
+  dailyCard   DailyCard @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
+  time        String?
+  trigger     String?
+  setup       String?
+  direction   String?
+  tier        String?
+  rExpected   Float?
+  rActual     Float?
+  decision    String?
+  emotion     String?
+  lessons     String?
+  createdAt   DateTime  @default(now())
+}
+
+model EmotionEntry {
+  id             String    @id @default(cuid())
+  dailyCardId    String
+  dailyCard      DailyCard @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
+  time           String?
+  emotion        String?
+  triggerContext String?
+  meaningSignal  String?
+  reaction       String?
+  createdAt      DateTime  @default(now())
+}
+
+model WeeklyReview {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart            DateTime @db.Date
+  weekEnd              DateTime @db.Date
+  bridgeStrategicTopic  String?
+  bridgePreMortemItems Json?
+  processGoalNextWeek  String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+}
+
+model CalibrationGoal {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  layer               String
+  sourceId            String?
+  goalText            String
+  probabilityAssigned Int
+  setAt               DateTime  @default(now())
+  evaluatedAt         DateTime?
+  outcome             String?
+}
