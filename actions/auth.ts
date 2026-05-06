@@ -6,10 +6,10 @@ import bcrypt from "bcryptjs"
 import { AuthError } from "next-auth"
 
 export async function registerUser(formData: FormData) {
-  const email = formData.get("email") as string
-  const password = formData.get("password") as string
+  const email = formData.get("email")
+  const password = formData.get("password")
 
-  if (!email || !password || password.length < 8) {
+  if (typeof email !== "string" || typeof password !== "string" || !email || password.length < 8) {
     return { error: "Email i hasło (min. 8 znaków) są wymagane." }
   }
 
@@ -21,7 +21,14 @@ export async function registerUser(formData: FormData) {
   const hash = await bcrypt.hash(password, 12)
   await prisma.user.create({ data: { email, password: hash } })
 
-  await signIn("credentials", { email, password, redirectTo: "/dashboard" })
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/dashboard" })
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: "Błąd logowania po rejestracji." }
+    }
+    throw error
+  }
 }
 
 export async function loginUser(formData: FormData) {
