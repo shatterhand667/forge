@@ -55,10 +55,10 @@ model DailyCard {
   processScore       Int?
   pl                 String?
   overallScore       Int?
-  proudOf                String?
-  ashamedOf              String?
-  tomorrowRemember       String?
-  mentorComment          String?
+  proudOf            String?
+  ashamedOf          String?
+  tomorrowRemember   String?
+  mentorComment      String?
   yesterdayMentorComment String?
 
   // area scores (added for Step 8 of wizard)
