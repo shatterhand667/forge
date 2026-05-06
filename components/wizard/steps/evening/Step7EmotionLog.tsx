@@ -7,11 +7,11 @@ import { addEmotionEntry, updateEmotionEntry } from "@/actions/emotions"
 import type { DailyCard, EmotionEntry } from "@prisma/client"
 
 const EMOTION_COLUMNS = [
-  { id: "time",          label: "Czas",                width: "7%" },
-  { id: "emotion",       label: "Emocja",              width: "15%" },
-  { id: "triggerContext", label: "Trigger / kontekst",  width: "22%" },
-  { id: "meaningSignal",  label: "Znaczenie (sygnał)",  width: "22%" },
-  { id: "reaction",      label: "Reakcja",             width: "22%" },
+  { id: "time",           label: "Czas",                width: "7%" },
+  { id: "emotion",        label: "Emocja",              width: "15%" },
+  { id: "triggerContext", label: "Trigger / kontekst",  width: "26%", type: "textarea" as const },
+  { id: "meaningSignal",  label: "Znaczenie (sygnał)",  width: "26%", type: "textarea" as const },
+  { id: "reaction",       label: "Reakcja",             width: "26%", type: "textarea" as const },
 ]
 
 interface Props {
