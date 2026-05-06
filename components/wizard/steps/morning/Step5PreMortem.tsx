@@ -39,6 +39,7 @@ export function Step5PreMortem({ card, date, step, bridge2Items }: Props) {
       totalSteps={15}
       stepLabel="Pre-mortem"
       prevHref={`/cards/${date}/morning/4`}
+      lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="4" title="PRE-MORTEM" />

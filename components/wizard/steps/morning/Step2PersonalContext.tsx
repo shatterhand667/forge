@@ -42,6 +42,7 @@ export function Step2PersonalContext({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Kontekst osobisty"
       prevHref={`/cards/${date}/morning/1`}
+      lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="1" title="KONTEKST OSOBISTY (RANO)" />

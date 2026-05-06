@@ -11,6 +11,7 @@ interface WizardLayoutProps {
   prevHref?: string
   nextLabel?: string
   nextDisabled?: boolean
+  lesson?: string | null
 }
 
 const TOTAL_STEPS = 15
@@ -25,6 +26,7 @@ export function WizardLayout({
   prevHref,
   nextLabel = "Dalej →",
   nextDisabled = false,
+  lesson,
 }: WizardLayoutProps) {
   const progressPercent = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100
 
@@ -38,12 +40,13 @@ export function WizardLayout({
         <div className="mx-auto px-4 py-2" style={{ maxWidth: "var(--content-max-width)" }}>
           <div className="flex items-center justify-between">
             <div>
-              <span
+              <Link
+                href="/dashboard"
                 className="font-bold uppercase tracking-wider"
-                style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-gold)" }}
+                style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-gold)", textDecoration: "none" }}
               >
                 The Forge
-              </span>
+              </Link>
               <span
                 className="ml-2"
                 style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}
@@ -72,6 +75,30 @@ export function WizardLayout({
             {stepLabel}
           </p>
         </div>
+        {lesson && (
+          <div
+            style={{
+              borderTop: "1px solid var(--color-border)",
+              background: "var(--color-light)",
+              padding: "6px 16px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "var(--font-size-tiny)",
+                color: "var(--color-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+                marginRight: "8px",
+              }}
+            >
+              Lekcja z wczoraj:
+            </span>
+            <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-text)" }}>
+              {lesson}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}

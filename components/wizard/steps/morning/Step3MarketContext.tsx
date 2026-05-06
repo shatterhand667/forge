@@ -35,6 +35,7 @@ export function Step3MarketContext({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Kontekst rynkowy"
       prevHref={`/cards/${date}/morning/2`}
+      lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="2" title="KONTEKST RYNKOWY" />

@@ -36,6 +36,7 @@ export function Step4DailyPlan({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Plan dnia"
       prevHref={`/cards/${date}/morning/3`}
+      lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="3" title="PLAN DNIA" />
