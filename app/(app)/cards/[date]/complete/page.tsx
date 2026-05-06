@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { getDailyCard } from "@/actions/cards"
 import { redirect } from "next/navigation"
+import { MentorCommentForm } from "@/components/dashboard/MentorCommentForm"
 
 export default async function CompletePage({
   params,
@@ -33,6 +34,9 @@ export default async function CompletePage({
           Dobra robota. Karta dzienna zapisana.
         </p>
       </div>
+
+      <MentorCommentForm cardId={card.id} initialComment={card.mentorComment} />
+
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 300 }}>
         <a
           href={`/api/cards/${date}/pdf`}
@@ -43,6 +47,13 @@ export default async function CompletePage({
         >
           Pobierz kartę (PDF)
         </a>
+        <Link
+          href={`/cards/${date}/morning/1`}
+          className="block text-center px-4 py-2 rounded"
+          style={{ border: "1px solid var(--color-border)", color: "var(--color-muted)", fontSize: 14 }}
+        >
+          Edytuj kartę
+        </Link>
         <Link
           href="/dashboard"
           className="block text-center px-4 py-2 rounded"
