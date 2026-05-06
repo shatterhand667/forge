@@ -25,7 +25,7 @@ export async function getOrCreateDailyCard(dateStr: string) {
   return prisma.dailyCard.upsert({
     where: { userId_date: { userId, date } },
     create: { userId, date, yesterdayLesson, lastWeekLesson, yesterdayMentorComment },
-    update: {},
+    update: { yesterdayLesson, lastWeekLesson, yesterdayMentorComment },
     include: {
       trades: { orderBy: { createdAt: "asc" } },
       emotionEntries: { orderBy: { createdAt: "asc" } },
