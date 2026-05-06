@@ -93,18 +93,15 @@ describe("getYesterdayMentorComment", () => {
     expect(result).toBeNull()
   })
 
-  it("queries only cards before the given date", async () => {
+  it("queries only cards before the given date with correct ordering", async () => {
     vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue(null)
 
     await getYesterdayMentorComment("user-1", new Date("2026-05-06"))
 
-    expect(prisma.dailyCard.findFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          date: expect.objectContaining({ lt: new Date("2026-05-06") }),
-          mentorComment: { not: null },
-        }),
-      })
-    )
+    expect(prisma.dailyCard.findFirst).toHaveBeenCalledWith({
+      where: { userId: "user-1", date: { lt: new Date("2026-05-06") }, mentorComment: { not: null } },
+      orderBy: { date: "desc" },
+      select: { mentorComment: true },
+    })
   })
 })
