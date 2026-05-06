@@ -1,0 +1,75 @@
+import { describe, it, expect, vi, beforeEach } from "vitest"
+
+vi.mock("@/lib/db", () => ({
+  prisma: {
+    dailyCard: { findFirst: vi.fn() },
+    weeklyReview: { findFirst: vi.fn() },
+  },
+}))
+
+import { prisma } from "@/lib/db"
+import { getYesterdayLesson, getLastWeekLesson, getBridge2Items } from "@/lib/bridges"
+
+describe("getYesterdayLesson", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns tomorrowRemember from most recent previous card", async () => {
+    vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue({
+      tomorrowRemember: "Nie wchodź w C-setup po 14:00",
+    } as any)
+
+    const result = await getYesterdayLesson("user-1", new Date("2026-05-06"))
+
+    expect(prisma.dailyCard.findFirst).toHaveBeenCalledWith({
+      where: {
+        userId: "user-1",
+        date: { lt: new Date("2026-05-06") },
+        tomorrowRemember: { not: null },
+      },
+      orderBy: { date: "desc" },
+      select: { tomorrowRemember: true },
+    })
+    expect(result).toBe("Nie wchodź w C-setup po 14:00")
+  })
+
+  it("returns null when no previous card exists", async () => {
+    vi.mocked(prisma.dailyCard.findFirst).mockResolvedValue(null)
+    expect(await getYesterdayLesson("user-1", new Date("2026-05-06"))).toBeNull()
+  })
+})
+
+describe("getLastWeekLesson", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns bridgeStrategicTopic from most recent weekly review", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue({
+      bridgeStrategicTopic: "Focusuj się tylko na A-setupach",
+    } as any)
+
+    const result = await getLastWeekLesson("user-1", new Date("2026-05-06"))
+    expect(result).toBe("Focusuj się tylko na A-setupach")
+  })
+
+  it("returns null when no weekly review exists", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue(null)
+    expect(await getLastWeekLesson("user-1", new Date("2026-05-06"))).toBeNull()
+  })
+})
+
+describe("getBridge2Items", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns bridgePreMortemItems array from most recent weekly review", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue({
+      bridgePreMortemItems: ["Nie revenge trade", "Stop przed newsami", "Max 3 trades/dzień"],
+    } as any)
+
+    const result = await getBridge2Items("user-1", new Date("2026-05-06"))
+    expect(result).toEqual(["Nie revenge trade", "Stop przed newsami", "Max 3 trades/dzień"])
+  })
+
+  it("returns empty array when no weekly review exists", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue(null)
+    expect(await getBridge2Items("user-1", new Date("2026-05-06"))).toEqual([])
+  })
+})

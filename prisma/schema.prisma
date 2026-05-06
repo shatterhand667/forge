@@ -53,7 +53,7 @@ model DailyCard {
   whatShapedIt       String?
   deliberatePractice String?
   processScore       Int?
-  pl                 Float?
+  pl                 String?
   overallScore       Int?
   proudOf            String?
   ashamedOf          String?

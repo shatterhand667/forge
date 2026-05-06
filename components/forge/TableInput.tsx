@@ -8,7 +8,7 @@ export interface Column {
 
 interface TableInputProps {
   columns: Column[]
-  rows: Record<string, string | number>[]
+  rows: Record<string, unknown>[]
   onAddRow: () => void
   onUpdateRow: (index: number, field: string, value: string | number) => void
   addLabel?: string
