@@ -50,7 +50,7 @@ export default async function CompletePage({
         <Link
           href={`/cards/${date}/morning/1`}
           className="block text-center px-4 py-2 rounded"
-          style={{ border: "1px solid var(--color-border)", color: "var(--color-muted)", fontSize: 14 }}
+          style={{ border: "1px solid var(--color-border)", color: "var(--color-muted)", fontSize: "var(--font-size-body)" }}
         >
           Edytuj kartę
         </Link>
