@@ -16,9 +16,11 @@ export async function getOrCreateDailyCard(dateStr: string) {
   const userId = await requireUser()
   const date = new Date(dateStr)
 
-  const yesterdayLesson = await getYesterdayLesson(userId, date)
-  const lastWeekLesson = await getLastWeekLesson(userId, date)
-  const yesterdayMentorComment = await getYesterdayMentorComment(userId, date)
+  const [yesterdayLesson, lastWeekLesson, yesterdayMentorComment] = await Promise.all([
+    getYesterdayLesson(userId, date),
+    getLastWeekLesson(userId, date),
+    getYesterdayMentorComment(userId, date),
+  ])
 
   return prisma.dailyCard.upsert({
     where: { userId_date: { userId, date } },
@@ -61,6 +63,7 @@ export async function updateMentorComment(id: string, mentorComment: string) {
   if (!card) throw new Error("Card not found")
   await prisma.dailyCard.update({ where: { id }, data: { mentorComment } })
   revalidatePath("/dashboard")
+  revalidatePath("/cards", "layout")
 }
 
 export async function getDailyCard(dateStr: string) {
