@@ -22,7 +22,7 @@ model DailyCard {
   userId          String
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   date            DateTime    @db.Date
-  status          CardStatus  @default(MORNING)
+  status          CardStatus  @default(STARTED)
 
   // morning
   sleep           Int?
@@ -79,6 +79,7 @@ model DailyCard {
 }
 
 enum CardStatus {
+  STARTED
   MORNING
   COMPLETED
 }

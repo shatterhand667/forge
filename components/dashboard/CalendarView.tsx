@@ -2,7 +2,7 @@ import Link from "next/link"
 
 interface CalendarCard {
   date: Date
-  status: "MORNING" | "COMPLETED"
+  status: "STARTED" | "MORNING" | "COMPLETED"
 }
 
 interface CalendarViewProps {
@@ -16,6 +16,7 @@ const DAY_LABELS = ["Pn", "Wt", "Śr", "Czw", "Pt", "Sb", "Nd"]
 const STATUS_COLORS = {
   COMPLETED: "var(--color-mid)",
   MORNING: "var(--color-gold)",
+  STARTED: "var(--color-gold)",
 }
 
 export function CalendarView({ year, month, cards }: CalendarViewProps) {
@@ -59,10 +60,17 @@ export function CalendarView({ year, month, cards }: CalendarViewProps) {
           const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
           const status = cardMap.get(dateStr)
 
+          const href =
+            status === "COMPLETED"
+              ? `/cards/${dateStr}/complete`
+              : status === "MORNING"
+              ? `/cards/${dateStr}/evening/6`
+              : `/cards/${dateStr}/morning/1` // STARTED or no card
+
           return (
             <Link
               key={dateStr}
-              href={`/cards/${dateStr}/morning/1`}
+              href={href}
               data-testid={`day-${dateStr}`}
               data-status={status ?? "none"}
               className="flex items-center justify-center rounded aspect-square text-center"

@@ -2,7 +2,7 @@ import Link from "next/link"
 
 interface CardSummary {
   date: Date
-  status: "MORNING" | "COMPLETED"
+  status: "STARTED" | "MORNING" | "COMPLETED"
 }
 
 interface HistoryListProps {
@@ -12,6 +12,7 @@ interface HistoryListProps {
 const STATUS_LABEL = {
   COMPLETED: "Ukończona",
   MORNING: "Sesja poranna",
+  STARTED: "W trakcie",
 }
 
 export function HistoryList({ cards }: HistoryListProps) {

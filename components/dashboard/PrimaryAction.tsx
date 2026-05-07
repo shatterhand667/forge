@@ -2,12 +2,17 @@ import Link from "next/link"
 
 interface PrimaryActionProps {
   dateStr: string
-  status: "none" | "MORNING" | "COMPLETED"
+  status: "none" | "STARTED" | "MORNING" | "COMPLETED"
 }
 
 const CONFIGS = {
   none: {
     label: "Rozpocznij kartę dzienną",
+    href: (d: string) => `/cards/${d}/morning/1`,
+    bg: "var(--color-mid)",
+  },
+  STARTED: {
+    label: "Wróć do sesji porannej →",
     href: (d: string) => `/cards/${d}/morning/1`,
     bg: "var(--color-mid)",
   },
