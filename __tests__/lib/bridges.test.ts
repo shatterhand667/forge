@@ -8,7 +8,7 @@ vi.mock("@/lib/db", () => ({
 }))
 
 import { prisma } from "@/lib/db"
-import { getYesterdayLesson, getLastWeekLesson, getBridge2Items, getYesterdayMentorComment } from "@/lib/bridges"
+import { getYesterdayLesson, getLastWeekLesson, getBridge2Items, getYesterdayMentorComment, getLastWeeklyReview } from "@/lib/bridges"
 
 describe("getYesterdayLesson", () => {
   beforeEach(() => vi.clearAllMocks())
@@ -102,6 +102,38 @@ describe("getYesterdayMentorComment", () => {
       where: { userId: "user-1", date: { lt: new Date("2026-05-06") }, mentorComment: { not: null } },
       orderBy: { date: "desc" },
       select: { mentorComment: true },
+    })
+  })
+})
+
+describe("getLastWeeklyReview", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("returns processGoalNextWeek from most recent weekly before date", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue({
+      processGoalNextWeek: "Focusuj na A-setupach, max 3 trades/dzień",
+    } as any)
+
+    const result = await getLastWeeklyReview("u1", new Date("2026-05-11"))
+    expect(result?.processGoalNextWeek).toBe("Focusuj na A-setupach, max 3 trades/dzień")
+  })
+
+  it("returns null when no previous weekly exists", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue(null)
+
+    const result = await getLastWeeklyReview("u1", new Date("2026-05-11"))
+    expect(result).toBeNull()
+  })
+
+  it("queries with weekStart < beforeDate ordered descending", async () => {
+    vi.mocked(prisma.weeklyReview.findFirst).mockResolvedValue(null)
+
+    await getLastWeeklyReview("u1", new Date("2026-05-11"))
+
+    expect(prisma.weeklyReview.findFirst).toHaveBeenCalledWith({
+      where: { userId: "u1", weekStart: { lt: new Date("2026-05-11") } },
+      orderBy: { weekStart: "desc" },
+      select: { processGoalNextWeek: true },
     })
   })
 })

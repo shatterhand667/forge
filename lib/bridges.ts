@@ -50,3 +50,14 @@ export async function getYesterdayMentorComment(userId: string, date: Date): Pro
   })
   return card?.mentorComment ?? null
 }
+
+export async function getLastWeeklyReview(
+  userId: string,
+  beforeDate: Date
+): Promise<{ processGoalNextWeek: string | null } | null> {
+  return prisma.weeklyReview.findFirst({
+    where: { userId, weekStart: { lt: beforeDate } },
+    orderBy: { weekStart: "desc" },
+    select: { processGoalNextWeek: true },
+  })
+}
