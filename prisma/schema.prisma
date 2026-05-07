@@ -84,6 +84,11 @@ enum CardStatus {
   COMPLETED
 }
 
+enum WeeklyStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
 model Trade {
   id          String    @id @default(cuid())
   dailyCardId String
@@ -114,16 +119,71 @@ model EmotionEntry {
 }
 
 model WeeklyReview {
-  id                   String   @id @default(cuid())
+  id                   String        @id @default(cuid())
   userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekStart            DateTime @db.Date
-  weekEnd              DateTime @db.Date
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart            DateTime      @db.Date
+  weekEnd              DateTime      @db.Date
+  status               WeeklyStatus  @default(IN_PROGRESS)
+
+  // Bridge 4: auto-populated from previous weekly's processGoalNextWeek
+  lastWeekGoalRecap    String?
+
+  // Section 1 — manual overrides
+  maxDrawdown          String?
+  netPL                String?
+
+  // Section 2 — tier conclusions
+  tierAConclusion      String?
+  tierBConclusion      String?
+  tierCConclusion      String?
+
+  // Section 3 — day observations
+  monObservation       String?
+  tueObservation       String?
+  wedObservation       String?
+  thuObservation       String?
+  friObservation       String?
+
+  // Sections 5–9, 12–13 — narrative fields
+  bestTradeWhy                String?
+  worstTradeWhatWentWrong     String?
+  lesson1                     String?
+  lesson2                     String?
+  lesson3                     String?
+  gratitude                   String?
+  patternWhenStrongest        String?
+  identityWasThatTrader       String?
+  identityWasNot              String?
+  threatsMap                  String?
+
+  // Section 10 — repeating errors table
+  repeatingErrors      Json?
+
+  // Section 11 — mental capital
+  renewedMe            String?
+  drainedMe            String?
+
+  // Section 14 — Bridge 2 output
   bridgeStrategicTopic  String?
-  bridgePreMortemItems Json?
-  processGoalNextWeek  String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  bridgePreMortemItems  Json?
+
+  // Section 15 — deliberate practice
+  lastWeekPracticeCount         Int?
+  lastWeekPracticeWhatWentWrong String?
+  practicePlan                  Json?
+  practiceMeta                  String?
+
+  // Section 16 — goal + mentor
+  oneSentenceSummary     String?
+  mentorTopic            String?
+  stopLossThreshold      String?
+  systemCheck            String?
+  processGoalProbability Int?
+  processGoalNextWeek    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, weekStart])
 }
