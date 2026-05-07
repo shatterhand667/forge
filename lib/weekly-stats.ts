@@ -73,13 +73,13 @@ export async function computeWeeklyStats(
   })
 
   const allTrades = cards.flatMap((c) => c.trades)
-  const withR = allTrades.filter((t) => t.rActual !== null) as (typeof allTrades)[number][]
+  const withR = allTrades.filter((t) => t.rActual !== null) as (Omit<(typeof allTrades)[number], "rActual"> & { rActual: number })[]
 
-  const wins = withR.filter((t) => t.rActual! > 0)
-  const losses = withR.filter((t) => t.rActual! < 0)
-  const totalR = withR.reduce((sum, t) => sum + t.rActual!, 0)
-  const grossWin = wins.reduce((sum, t) => sum + t.rActual!, 0)
-  const grossLoss = Math.abs(losses.reduce((sum, t) => sum + t.rActual!, 0))
+  const wins = withR.filter((t) => t.rActual > 0)
+  const losses = withR.filter((t) => t.rActual < 0)
+  const totalR = withR.reduce((sum, t) => sum + t.rActual, 0)
+  const grossWin = wins.reduce((sum, t) => sum + t.rActual, 0)
+  const grossLoss = Math.abs(losses.reduce((sum, t) => sum + t.rActual, 0))
 
   const sleepValues = cards.filter((c) => c.sleep !== null).map((c) => c.sleep as number)
   const sleepAvg =
@@ -99,7 +99,7 @@ export async function computeWeeklyStats(
     fri: emptyDayStats(),
   }
   for (const card of cards) {
-    const dow = new Date(card.date).getDay()
+    const dow = new Date(card.date).getUTCDay()
     const key = DAY_INDEX_TO_KEY[dow]
     if (key) {
       byDay[key] = {
@@ -115,8 +115,8 @@ export async function computeWeeklyStats(
     winRate: withR.length > 0 ? wins.length / withR.length : 0,
     avgR: withR.length > 0 ? totalR / withR.length : 0,
     profitFactor: grossLoss > 0 ? grossWin / grossLoss : 0,
-    bestR: withR.length > 0 ? Math.max(...withR.map((t) => t.rActual!)) : 0,
-    worstR: withR.length > 0 ? Math.min(...withR.map((t) => t.rActual!)) : 0,
+    bestR: withR.length > 0 ? Math.max(...withR.map((t) => t.rActual)) : 0,
+    worstR: withR.length > 0 ? Math.min(...withR.map((t) => t.rActual)) : 0,
     sleepAvg,
     byTier: {
       A: calcTierStats(tierGroups.A),
