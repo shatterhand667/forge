@@ -5,6 +5,15 @@ import { LessonBanner } from "@/components/dashboard/LessonBanner"
 import { CalendarView } from "@/components/dashboard/CalendarView"
 import { HistoryList } from "@/components/dashboard/HistoryList"
 import { PrimaryAction } from "@/components/dashboard/PrimaryAction"
+import { WeeklyAction } from "@/components/dashboard/WeeklyAction"
+
+function getCurrentWeekStart(now: Date): string {
+  const dow = now.getUTCDay()
+  const daysFromMon = dow === 0 ? 6 : dow - 1
+  const mon = new Date(now)
+  mon.setUTCDate(now.getUTCDate() - daysFromMon)
+  return `${mon.getUTCFullYear()}-${String(mon.getUTCMonth() + 1).padStart(2, "0")}-${String(mon.getUTCDate()).padStart(2, "0")}`
+}
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -18,6 +27,11 @@ export default async function DashboardPage() {
     String(now.getDate()).padStart(2, "0"),
   ].join("-")
   const today = new Date(todayStr) // UTC midnight for local date — consistent with stored card dates
+
+  const weekStartStr = getCurrentWeekStart(now)
+  const weekStartDate = new Date(weekStartStr)
+  const weekEndDate = new Date(weekStartDate)
+  weekEndDate.setUTCDate(weekEndDate.getUTCDate() + 4)
 
   const [todayCard, lessonForBanner] = await Promise.all([
     prisma.dailyCard.findUnique({
@@ -33,7 +47,7 @@ export default async function DashboardPage() {
   const monthStart = new Date(`${year}-${String(month).padStart(2, "0")}-01`)
   const monthEnd = new Date(`${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`)
 
-  const [monthCards, recentCards] = await Promise.all([
+  const [monthCards, recentCards, weeklyCardCount, currentWeeklyReview] = await Promise.all([
     prisma.dailyCard.findMany({
       where: { userId, date: { gte: monthStart, lte: monthEnd } },
       select: { date: true, status: true },
@@ -43,6 +57,13 @@ export default async function DashboardPage() {
       select: { date: true, status: true },
       orderBy: { date: "desc" },
       take: 14,
+    }),
+    prisma.dailyCard.count({
+      where: { userId, date: { gte: weekStartDate, lte: weekEndDate }, status: "COMPLETED" },
+    }),
+    prisma.weeklyReview.findUnique({
+      where: { userId_weekStart: { userId, weekStart: weekStartDate } },
+      select: { status: true },
     }),
   ])
 
@@ -88,6 +109,13 @@ export default async function DashboardPage() {
           dateStr={todayStr}
           status={todayCard?.status ?? "none"}
         />
+
+        {weeklyCardCount >= 1 && (
+          <WeeklyAction
+            weekStart={weekStartStr}
+            status={currentWeeklyReview?.status ?? "none"}
+          />
+        )}
 
         <section>
           <CalendarView
