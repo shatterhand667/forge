@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { getOrCreateWeeklyReview, getWeeklyStats } from "@/actions/weekly"
+import { getOrCreateWeeklyReview, getWeeklyStats, getEdgeTrend } from "@/actions/weekly"
 import { WeeklyStep1Stats } from "@/components/weekly/steps/WeeklyStep1Stats"
 import { WeeklyStep2Tiers } from "@/components/weekly/steps/WeeklyStep2Tiers"
 import { WeeklyStep3EdgeTrend } from "@/components/weekly/steps/WeeklyStep3EdgeTrend"
@@ -29,16 +29,17 @@ export default async function WeeklyStepPage({
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const [review, stats] = await Promise.all([
+  const [review, stats, edgeTrend] = await Promise.all([
     getOrCreateWeeklyReview(weekStart),
     getWeeklyStats(weekStart),
+    step === 3 ? getEdgeTrend(weekStart) : Promise.resolve([]),
   ])
 
   const props = { review, stats, weekStart, step }
 
   if (step === 1) return <WeeklyStep1Stats {...props} />
   if (step === 2) return <WeeklyStep2Tiers {...props} />
-  if (step === 3) return <WeeklyStep3EdgeTrend {...props} edgeTrend={[]} />
+  if (step === 3) return <WeeklyStep3EdgeTrend {...props} edgeTrend={edgeTrend} />
   if (step === 4) return <WeeklyStep4Trades {...props} />
   if (step === 5) return <WeeklyStep5Lessons {...props} />
   if (step === 6) return <WeeklyStep6Patterns {...props} />

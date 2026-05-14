@@ -94,6 +94,42 @@ export async function getWeeklyStats(weekStartStr: string) {
   return computeWeeklyStats(userId, weekStart, weekEnd)
 }
 
+export interface EdgeWeekData {
+  label: string
+  winRate: number
+  avgR: number
+  profitFactor: number
+}
+
+export async function getEdgeTrend(weekStartStr: string): Promise<EdgeWeekData[]> {
+  const userId = await requireUser()
+  const currentWeekStart = new Date(weekStartStr)
+
+  const previousReviews = await prisma.weeklyReview.findMany({
+    where: { userId, weekStart: { lt: currentWeekStart } },
+    orderBy: { weekStart: "desc" },
+    take: 4,
+    select: { weekStart: true, weekEnd: true },
+  })
+
+  const ordered = previousReviews.reverse()
+
+  const results: EdgeWeekData[] = await Promise.all(
+    ordered.map(async (r) => {
+      const s = await computeWeeklyStats(userId, r.weekStart, r.weekEnd)
+      const d = r.weekStart
+      return {
+        label: `${d.getUTCDate()}.${String(d.getUTCMonth() + 1).padStart(2, "0")}`,
+        winRate: s.winRate,
+        avgR: s.avgR,
+        profitFactor: s.profitFactor,
+      }
+    })
+  )
+
+  return results
+}
+
 export async function getWeeklyReviewsByMonth(year: number, month: number) {
   const userId = await requireUser()
   const start = new Date(year, month - 1, 1)
