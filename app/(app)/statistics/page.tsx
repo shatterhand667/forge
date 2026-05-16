@@ -162,20 +162,20 @@ export default async function StatisticsPage({
 
             {/* Per-setup table */}
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 580 }}>
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, textAlign: "left" }}>Setup</th>
-                    <th style={thStyle}>Trades</th>
-                    <th style={thStyle}>Win Rate</th>
-                    <th style={thStyle}>Avg R</th>
-                    <th style={thStyle}>P&amp;L ($)</th>
-                    <th style={thStyle}>Profit Factor</th>
-                    <th style={thStyle}>Long</th>
-                    <th style={thStyle}>Short</th>
-                    <th style={thStyle}>Tier A</th>
-                    <th style={thStyle}>Tier B</th>
-                    <th style={thStyle}>Tier C</th>
+                    <th style={{ ...thStyle, width: 60 }}>Trades</th>
+                    <th style={{ ...thStyle, width: 72 }}>Win Rate</th>
+                    <th style={{ ...thStyle, width: 60 }}>Avg R</th>
+                    <th style={{ ...thStyle, width: 80 }}>P&amp;L ($)</th>
+                    <th style={{ ...thStyle, width: 76 }}>P. Factor</th>
+                    <th style={{ ...thStyle, width: 48 }}>Long</th>
+                    <th style={{ ...thStyle, width: 48 }}>Short</th>
+                    <th style={{ ...thStyle, width: 48 }}>Tier A</th>
+                    <th style={{ ...thStyle, width: 48 }}>Tier B</th>
+                    <th style={{ ...thStyle, width: 48 }}>Tier C</th>
                   </tr>
                 </thead>
                 <tbody>
