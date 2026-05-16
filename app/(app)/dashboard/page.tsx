@@ -186,6 +186,8 @@ export default async function DashboardPage({
             ))}
             <a
               href="/statistics"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 padding: "5px 14px",
                 fontSize: "var(--font-size-tiny)",
@@ -197,10 +199,9 @@ export default async function DashboardPage({
                 background: "var(--color-light)",
                 color: "var(--color-muted)",
                 border: "1px solid var(--color-border)",
-                marginLeft: 8,
               }}
             >
-              Statystyki →
+              Statystyki
             </a>
           </div>
 
