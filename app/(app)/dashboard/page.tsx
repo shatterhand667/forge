@@ -3,19 +3,30 @@ import { prisma } from "@/lib/db"
 import { getYesterdayLesson } from "@/lib/bridges"
 import { LessonBanner } from "@/components/dashboard/LessonBanner"
 import { CalendarView } from "@/components/dashboard/CalendarView"
-import { HistoryList } from "@/components/dashboard/HistoryList"
-import { PrimaryAction } from "@/components/dashboard/PrimaryAction"
-import { WeeklyAction } from "@/components/dashboard/WeeklyAction"
+import { WeekHistory, type WeekEntry } from "@/components/dashboard/WeekHistory"
+import { PlaybookView } from "@/components/dashboard/PlaybookView"
+import { CalibrationView } from "@/components/dashboard/CalibrationView"
+import { getPlaybook } from "@/actions/playbook"
+import { getCalibrationGoals } from "@/actions/calibration"
 
-function getCurrentWeekStart(now: Date): string {
-  const dow = now.getUTCDay()
+function getWeekStartStr(date: Date): string {
+  const dow = date.getUTCDay()
   const daysFromMon = dow === 0 ? 6 : dow - 1
-  const mon = new Date(now)
-  mon.setUTCDate(now.getUTCDate() - daysFromMon)
+  const mon = new Date(date)
+  mon.setUTCDate(date.getUTCDate() - daysFromMon)
   return `${mon.getUTCFullYear()}-${String(mon.getUTCMonth() + 1).padStart(2, "0")}-${String(mon.getUTCDate()).padStart(2, "0")}`
 }
 
-export default async function DashboardPage() {
+const WEEKS_PER_PAGE = 8
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; tab?: string }>
+}) {
+  const { page: pageParam, tab } = await searchParams
+  const activeTab = tab === "playbook" ? "playbook" : tab === "kalibracja" ? "kalibracja" : "historia"
+  const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10))
   const session = await auth()
   const userId = session!.user.id
 
@@ -28,44 +39,66 @@ export default async function DashboardPage() {
   ].join("-")
   const today = new Date(todayStr) // UTC midnight for local date — consistent with stored card dates
 
-  const weekStartStr = getCurrentWeekStart(now)
+  const weekStartStr = getWeekStartStr(today)
   const weekStartDate = new Date(weekStartStr)
-  const weekEndDate = new Date(weekStartDate)
-  weekEndDate.setUTCDate(weekEndDate.getUTCDate() + 4)
 
   const [todayCard, lessonForBanner] = await Promise.all([
     prisma.dailyCard.findUnique({
       where: { userId_date: { userId, date: today } },
       select: { status: true },
     }),
-    getYesterdayLesson(userId, today), // always fresh, not from stale stored bridge value
+    getYesterdayLesson(userId, today),
   ])
 
-  const year = now.getFullYear()
-  const month = now.getMonth() + 1
-  const daysInMonth = new Date(year, month, 0).getDate()
-  const monthStart = new Date(`${year}-${String(month).padStart(2, "0")}-01`)
-  const monthEnd = new Date(`${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`)
-
-  const [monthCards, recentCards, weeklyCardCount, currentWeeklyReview] = await Promise.all([
+  const [allCards, currentWeeklyReview, pastWeeklyReviews, playbook, calibrationGoals] = await Promise.all([
     prisma.dailyCard.findMany({
-      where: { userId, date: { gte: monthStart, lte: monthEnd } },
+      where: { userId },
       select: { date: true, status: true },
-    }),
-    prisma.dailyCard.findMany({
-      where: { userId, date: { lt: today } },
-      select: { date: true, status: true },
-      orderBy: { date: "desc" },
-      take: 14,
-    }),
-    prisma.dailyCard.count({
-      where: { userId, date: { gte: weekStartDate, lte: weekEndDate }, status: "COMPLETED" },
     }),
     prisma.weeklyReview.findUnique({
       where: { userId_weekStart: { userId, weekStart: weekStartDate } },
       select: { status: true },
     }),
+    prisma.weeklyReview.findMany({
+      where: { userId, weekStart: { lt: weekStartDate } },
+      select: { weekStart: true, status: true },
+    }),
+    getPlaybook(),
+    getCalibrationGoals(),
   ])
+
+  const pastCards = allCards.filter((c) => new Date(c.date) < weekStartDate)
+
+  // Group past cards and weekly reviews by week
+  const weekMap = new Map<string, WeekEntry>()
+
+  for (const card of pastCards) {
+    const ws = getWeekStartStr(new Date(card.date))
+    if (!weekMap.has(ws)) weekMap.set(ws, { weekStart: ws, days: [], weeklyReview: null })
+    weekMap.get(ws)!.days.push(card)
+  }
+
+  for (const wr of pastWeeklyReviews) {
+    const ws = new Date(wr.weekStart).toISOString().split("T")[0]
+    if (!weekMap.has(ws)) weekMap.set(ws, { weekStart: ws, days: [], weeklyReview: null })
+    weekMap.get(ws)!.weeklyReview = wr as { status: "IN_PROGRESS" | "COMPLETED" }
+  }
+
+  const allWeeks = Array.from(weekMap.values()).sort((a, b) =>
+    b.weekStart.localeCompare(a.weekStart)
+  )
+  const totalPages = Math.max(1, Math.ceil(allWeeks.length / WEEKS_PER_PAGE))
+  const safePage = Math.min(currentPage, totalPages)
+  const weekHistory = allWeeks.slice((safePage - 1) * WEEKS_PER_PAGE, safePage * WEEKS_PER_PAGE)
+
+  const weeklyReviewMap: Record<string, "IN_PROGRESS" | "COMPLETED"> = {}
+  for (const wr of pastWeeklyReviews) {
+    const ws = new Date(wr.weekStart).toISOString().split("T")[0]
+    weeklyReviewMap[ws] = wr.status as "IN_PROGRESS" | "COMPLETED"
+  }
+  if (currentWeeklyReview?.status) {
+    weeklyReviewMap[weekStartStr] = currentWeeklyReview.status as "IN_PROGRESS" | "COMPLETED"
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
@@ -105,34 +138,81 @@ export default async function DashboardPage() {
       >
         {lessonForBanner && <LessonBanner lesson={lessonForBanner} />}
 
-        <PrimaryAction
+        {/* <PrimaryAction
           dateStr={todayStr}
           status={todayCard?.status ?? "none"}
-        />
+        /> */}
 
-        {weeklyCardCount >= 1 && (
-          <WeeklyAction
-            weekStart={weekStartStr}
-            status={currentWeeklyReview?.status ?? "none"}
-          />
-        )}
+        {/* <WeeklyAction
+          weekStart={weekStartStr}
+          status={currentWeeklyReview?.status ?? "none"}
+        /> */}
 
         <section>
           <CalendarView
-            year={now.getFullYear()}
-            month={now.getMonth() + 1}
-            cards={monthCards}
+            initialYear={now.getFullYear()}
+            initialMonth={now.getMonth() + 1}
+            allCards={allCards}
+            weeklyReviews={weeklyReviewMap}
           />
         </section>
 
         <section>
-          <h2
-            className="mb-3 font-bold uppercase tracking-wide"
-            style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}
-          >
-            Poprzednie dni
-          </h2>
-          <HistoryList cards={recentCards} />
+          {/* Tab buttons */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
+            {([
+              { key: "historia", label: "Historia", href: "/dashboard" },
+              { key: "kalibracja", label: "Kalibracja", href: "/dashboard?tab=kalibracja" },
+              { key: "playbook", label: "Playbook", href: "/dashboard?tab=playbook" },
+            ] as const).map(({ key, label, href }) => (
+              <a
+                key={key}
+                href={href}
+                style={{
+                  padding: "5px 14px",
+                  fontSize: "var(--font-size-tiny)",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.3px",
+                  textDecoration: "none",
+                  borderRadius: 2,
+                  background: activeTab === key ? "var(--color-mid)" : "var(--color-light)",
+                  color: activeTab === key ? "#fff" : "var(--color-muted)",
+                  border: "1px solid var(--color-border)",
+                }}
+              >
+                {label}
+              </a>
+            ))}
+            <a
+              href="/statistics"
+              style={{
+                padding: "5px 14px",
+                fontSize: "var(--font-size-tiny)",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+                textDecoration: "none",
+                borderRadius: 2,
+                background: "var(--color-light)",
+                color: "var(--color-muted)",
+                border: "1px solid var(--color-border)",
+                marginLeft: 8,
+              }}
+            >
+              Statystyki →
+            </a>
+          </div>
+
+          {activeTab === "historia" && (
+            <WeekHistory weeks={weekHistory} currentPage={safePage} totalPages={totalPages} />
+          )}
+          {activeTab === "kalibracja" && (
+            <CalibrationView goals={calibrationGoals as any} />
+          )}
+          {activeTab === "playbook" && (
+            <PlaybookView playbook={playbook as any} />
+          )}
         </section>
       </main>
     </div>
