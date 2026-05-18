@@ -95,9 +95,9 @@ export async function updateTrade(
   })
   if (!trade || trade.dailyCard.userId !== userId) throw new Error("Not found")
 
-  const trade = await prisma.trade.update({ where: { id }, data })
+  const updated = await prisma.trade.update({ where: { id }, data })
   revalidatePath('/statistics')
-  return trade
+  return updated
 }
 
 export async function deleteTrade(id: string) {
@@ -108,7 +108,7 @@ export async function deleteTrade(id: string) {
   })
   if (!trade || trade.dailyCard.userId !== userId) throw new Error("Not found")
 
-  const trade = await prisma.trade.delete({ where: { id } })
+  const deleted = await prisma.trade.delete({ where: { id } })
   revalidatePath('/statistics')
-  return trade
+  return deleted
 }
