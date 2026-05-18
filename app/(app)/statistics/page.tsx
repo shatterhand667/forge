@@ -84,12 +84,14 @@ export default async function StatisticsPage({
     verticalAlign: "middle",
   }
 
+  const A = "rgba(0,0,0,0.03)"
+  const B = "rgba(80,120,220,0.05)"
   const G = {
     setup:     "transparent",
-    trades:    "rgba(0,0,0,0.03)",
-    metrics:   "rgba(80,120,220,0.05)",
-    direction: "rgba(45,140,78,0.07)",
-    tiers:     "rgba(200,160,40,0.08)",
+    trades:    A,
+    metrics:   B,
+    direction: A,
+    tiers:     B,
   }
   const thStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
     ({ ...thBase, background: "var(--color-mid)", ...extra })
