@@ -63,6 +63,7 @@ export async function updateWeeklyReview(
     lastWeekPracticeWhatWentWrong: string
     practicePlan: Prisma.InputJsonValue
     practiceMeta: string
+    lessonApplications: Prisma.InputJsonValue
     oneSentenceSummary: string
     mentorTopic: string
     stopLossThreshold: string
@@ -128,6 +129,18 @@ export async function getEdgeTrend(weekStartStr: string): Promise<EdgeWeekData[]
   )
 
   return results
+}
+
+export async function getWeekLessons(weekStartStr: string) {
+  const userId = await requireUser()
+  const weekStart = new Date(weekStartStr)
+  const weekEnd = new Date(weekStart)
+  weekEnd.setUTCDate(weekEnd.getUTCDate() + 5) // Mon–Fri
+  return prisma.dailyCard.findMany({
+    where: { userId, date: { gte: weekStart, lt: weekEnd } },
+    select: { date: true, yesterdayLesson: true },
+    orderBy: { date: "asc" },
+  })
 }
 
 export async function getWeeklyReviewsByMonth(year: number, month: number) {

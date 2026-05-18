@@ -114,6 +114,15 @@ export default async function WeeklyCompletePage({
         )}
 
         <div className="flex flex-col gap-3">
+          <a
+            href={`/api/weekly/${weekStart}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center px-6 py-3 rounded font-medium"
+            style={{ background: "var(--color-gold)", color: "var(--color-white)", fontSize: 14 }}
+          >
+            Pobierz przegląd (PDF)
+          </a>
           <Link
             href={`/weekly/${weekStart}/step/1`}
             className="block text-center px-6 py-3 rounded font-medium"
