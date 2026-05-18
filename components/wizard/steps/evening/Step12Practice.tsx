@@ -32,6 +32,9 @@ export function Step12Practice({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Deliberate practice"
       prevHref={`/cards/${date}/evening/11`}
+      onNext={handleNext}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Dalej →"}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="11" title="DELIBERATE PRACTICE (poza tradingiem)" />
@@ -41,28 +44,6 @@ export function Step12Practice({ card, date, step }: Props) {
           onChange={setDeliberatePractice}
           rows={5}
         />
-      </div>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/evening/11`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleNext}
-            disabled={saving}
-            className="px-4 py-2 rounded text-sm font-medium"
-            style={{ background: "var(--color-mid)", color: "var(--color-white)", opacity: saving ? 0.6 : 1 }}
-          >
-            {saving ? "Zapisuję..." : "Dalej →"}
-          </button>
-        </div>
       </div>
     </WizardLayout>
   )

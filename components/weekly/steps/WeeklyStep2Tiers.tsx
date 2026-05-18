@@ -124,7 +124,7 @@ export function WeeklyStep2Tiers({ review, stats, weekStart, step }: Props) {
                 <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <th style={{ textAlign: "left", padding: "4px 8px", color: "var(--color-muted)" }}>Dzień</th>
                   <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Proces</th>
-                  <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>P&L (R)</th>
+                  <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>P&L ($)</th>
                   <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Mental</th>
                   <th style={{ textAlign: "left", padding: "4px 8px", color: "var(--color-muted)" }}>Obserwacja</th>
                 </tr>
@@ -136,7 +136,12 @@ export function WeeklyStep2Tiers({ review, stats, weekStart, step }: Props) {
                     <tr key={key} style={{ borderBottom: "1px solid var(--color-border)" }}>
                       <td style={{ padding: "6px 8px", fontWeight: 600 }}>{label}</td>
                       <td style={{ padding: "6px 8px", textAlign: "center" }}>{d.processScore ?? "—"}</td>
-                      <td style={{ padding: "6px 8px", textAlign: "center" }}>{d.pl ?? "—"}</td>
+                      <td style={{
+                        padding: "6px 8px", textAlign: "center", fontWeight: d.pl !== null ? 600 : undefined,
+                        color: d.pl !== null && d.pl > 0 ? "#2D8C4E" : d.pl !== null && d.pl < 0 ? "#D96060" : undefined,
+                      }}>
+                        {d.pl !== null ? `${d.pl > 0 ? "+" : ""}${d.pl.toFixed(2)}` : "—"}
+                      </td>
                       <td style={{ padding: "6px 8px", textAlign: "center" }}>{d.mentalAfter ?? "—"}</td>
                       <td style={{ padding: "6px 8px" }}>
                         <input

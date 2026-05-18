@@ -36,6 +36,9 @@ export function Step4DailyPlan({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Plan dnia"
       prevHref={`/cards/${date}/morning/3`}
+      onNext={handleNext}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Dalej →"}
       lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
@@ -48,28 +51,6 @@ export function Step4DailyPlan({ card, date, step }: Props) {
         <p style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", fontStyle: "italic" }}>
           A = 100% wielkości · B = 50% · C = 25%
         </p>
-      </div>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/morning/3`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleNext}
-            disabled={saving}
-            className="px-4 py-2 rounded text-sm font-medium"
-            style={{ background: "var(--color-mid)", color: "var(--color-white)", opacity: saving ? 0.6 : 1 }}
-          >
-            {saving ? "Zapisuję..." : "Dalej →"}
-          </button>
-        </div>
       </div>
     </WizardLayout>
   )

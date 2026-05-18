@@ -42,41 +42,22 @@ export function Step8AreaScores({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Oceny obszarów"
       prevHref={`/cards/${date}/evening/7`}
+      onNext={handleNext}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Dalej →"}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="7" title="OCENY OBSZARÓW" />
         <div className="flex flex-col gap-1 py-2">
-          <DotRow label="Setupy:" value={setups} onChange={setSetups} />
-          <DotRow label="Egzekucja:" value={execution} onChange={setExecution} />
-          <DotRow label="Zarządzanie ryzykiem:" value={riskManagement} onChange={setRiskManagement} />
-          <DotRow label="Psychologia:" value={psychology} onChange={setPsychology} />
-          <DotRow label="Dyscyplina:" value={discipline} onChange={setDiscipline} />
+          <DotRow label="Setupy:" value={setups} onChange={setSetups} labelWidth="170px" />
+          <DotRow label="Egzekucja:" value={execution} onChange={setExecution} labelWidth="170px" />
+          <DotRow label="Zarządzanie ryzykiem:" value={riskManagement} onChange={setRiskManagement} labelWidth="170px" />
+          <DotRow label="Psychologia:" value={psychology} onChange={setPsychology} labelWidth="170px" />
+          <DotRow label="Dyscyplina:" value={discipline} onChange={setDiscipline} labelWidth="170px" />
         </div>
         <p style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", fontStyle: "italic" }}>
           1 = naruszenie zasad · 3 = poprawnie ale automatycznie · 5 = świadomie i zgodnie z planem
         </p>
-      </div>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/evening/7`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleNext}
-            disabled={saving}
-            className="px-4 py-2 rounded text-sm font-medium"
-            style={{ background: "var(--color-mid)", color: "var(--color-white)" }}
-          >
-            {saving ? "Zapisuję..." : "Dalej →"}
-          </button>
-        </div>
       </div>
     </WizardLayout>
   )

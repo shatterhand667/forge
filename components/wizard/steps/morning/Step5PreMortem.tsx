@@ -25,10 +25,17 @@ export function Step5PreMortem({ card, date, step, bridge2Items }: Props) {
     setPreMortem((prev) => (prev ? `${prev}\n${text}` : text))
   }
 
-  async function handleGoTrade() {
+  const isEditing = card.status === "COMPLETED"
+
+  async function handleNext() {
     setSaving(true)
-    await updateDailyCard(card.id, { preMortem, dailyGoal, status: "MORNING" })
-    router.push("/dashboard")
+    if (isEditing) {
+      await updateDailyCard(card.id, { preMortem, dailyGoal })
+      router.push(`/cards/${date}/evening/6`)
+    } else {
+      await updateDailyCard(card.id, { preMortem, dailyGoal, status: "MORNING" })
+      router.push("/dashboard")
+    }
   }
 
   return (
@@ -39,6 +46,9 @@ export function Step5PreMortem({ card, date, step, bridge2Items }: Props) {
       totalSteps={15}
       stepLabel="Pre-mortem"
       prevHref={`/cards/${date}/morning/4`}
+      onNext={handleNext}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : isEditing ? "Dalej →" : "Idę tradować →"}
       lesson={card.yesterdayLesson}
     >
       <div className="flex flex-col gap-4">
@@ -64,28 +74,6 @@ export function Step5PreMortem({ card, date, step, bridge2Items }: Props) {
 
         <TextArea label="Co mogę dziś zepsuć?" value={preMortem} onChange={setPreMortem} rows={6} />
         <TextArea label="Cel dzienny:" value={dailyGoal} onChange={setDailyGoal} rows={2} />
-      </div>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/morning/4`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleGoTrade}
-            disabled={saving}
-            className="px-6 py-2 rounded font-medium"
-            style={{ background: "var(--color-gold)", color: "var(--color-white)", fontSize: 14 }}
-          >
-            {saving ? "Zapisuję..." : "Idę tradować →"}
-          </button>
-        </div>
       </div>
     </WizardLayout>
   )

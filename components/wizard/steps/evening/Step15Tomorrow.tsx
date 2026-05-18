@@ -33,6 +33,9 @@ export function Step15Tomorrow({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Lekcja na jutro"
       prevHref={`/cards/${date}/evening/14`}
+      onNext={handleFinish}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Zakończ dzień"}
     >
       <div className="flex flex-col gap-6">
         <div>
@@ -55,28 +58,6 @@ export function Step15Tomorrow({ card, date, step }: Props) {
               Lekcja pojawi się automatycznie na górze jutrzejszej karty dziennej.
             </p>
           </div>
-        </div>
-      </div>
-
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/evening/14`} style={{ color: "var(--color-muted)", fontSize: "var(--font-size-body)" }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleFinish}
-            disabled={saving}
-            className="px-6 py-2 rounded font-medium"
-            style={{ background: "var(--color-gold)", color: "var(--color-white)", fontSize: "var(--font-size-body)" }}
-          >
-            {saving ? "Zapisuję..." : "Zakończ dzień"}
-          </button>
         </div>
       </div>
     </WizardLayout>
