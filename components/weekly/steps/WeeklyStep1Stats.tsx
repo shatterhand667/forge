@@ -177,7 +177,7 @@ export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }
         </div>
 
         <p style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", fontStyle: "italic" }}>
-          Max DD i Net P&L wpisz ręcznie (z platformy brokerskiej).
+          Max DD wpisz ręcznie (z platformy brokerskiej). Net P&L wyliczane automatycznie z kart dziennych.
         </p>
 
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--font-size-tiny)" }}>
