@@ -84,7 +84,7 @@ export default async function StatisticsPage({
     verticalAlign: "middle",
   }
 
-  const A = "rgba(0,0,0,0.03)"
+  const A = "rgba(0,0,0,0.06)"
   const B = "rgba(80,120,220,0.05)"
   const G = {
     setup:     "transparent",
