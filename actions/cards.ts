@@ -78,6 +78,7 @@ export async function getDailyCard(dateStr: string) {
     include: {
       trades: { orderBy: { createdAt: "asc" } },
       emotionEntries: { orderBy: { createdAt: "asc" } },
+      screenshots: { orderBy: { createdAt: "asc" } },
     },
   })
 }

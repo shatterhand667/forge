@@ -17,8 +17,9 @@ export async function GET(
   const card = await prisma.dailyCard.findUnique({
     where: { userId_date: { userId: session.user.id, date } },
     include: {
-      trades: { orderBy: { createdAt: "asc" } },
+      trades: { orderBy: { createdAt: "asc" }, include: { playbookSetup: { select: { name: true, tier: true } } } },
       emotionEntries: { orderBy: { createdAt: "asc" } },
+      screenshots: { orderBy: { createdAt: "asc" } },
     },
   })
 
@@ -54,12 +55,20 @@ function buildCardHtml(card: any, dateStr: string): string {
     .map(
       (t: any) => `
       <tr>
-        <td>${t.time ?? ""}</td><td>${t.trigger ?? ""}</td><td>${t.setup ?? ""}</td>
-        <td>${t.direction ?? ""}</td><td>${t.tier ?? ""}</td>
+        <td>${t.time ?? ""}</td><td>${t.instrument ?? ""}</td><td>${t.playbookSetup?.name ?? ""}</td><td>${t.trigger ?? ""}</td>
+        <td>${t.direction ?? ""}</td><td>${t.tier ?? ""}</td><td>${t.volume != null ? t.volume : ""}</td>
         <td>${t.rExpected ?? ""}</td><td>${t.rActual ?? ""}</td>
+        <td>${t.profitRaw != null ? (t.profitRaw > 0 ? "+" : "") + Number(t.profitRaw).toFixed(2) : ""}</td>
         <td>${t.emotion ?? ""}</td><td>${t.lessons ?? ""}</td>
       </tr>`
     )
+    .join("")
+
+  const screenshotImgs = card.screenshots
+    .map((s: any) => {
+      const absUrl = `http://localhost:${process.env.PORT ?? 3000}${s.path}`
+      return `<img src="${absUrl}" style="max-width:220px;max-height:140px;object-fit:cover;border:0.5px solid #d1d5db;border-radius:2px;" />`
+    })
     .join("")
 
   const emotionRows = card.emotionEntries
@@ -144,9 +153,15 @@ function buildCardHtml(card: any, dateStr: string): string {
 
   <div class="section-header">5. LOG TRANSAKCJI</div>
   <table>
-    <thead><tr><th>Czas</th><th>Trigger</th><th>Setup</th><th>Kier.</th><th>Tier</th><th>R plan.</th><th>R real.</th><th>Emocja</th><th>Lekcje</th></tr></thead>
+    <thead><tr><th>Czas</th><th>Instr.</th><th>Setup</th><th>Trigger</th><th>Kier.</th><th>Tier</th><th>Wol.</th><th>R plan.</th><th>R real.</th><th>P&amp;L ($)</th><th>Emocja</th><th>Lekcje</th></tr></thead>
     <tbody>${tradeRows}</tbody>
   </table>
+
+  ${card.screenshots.length > 0 ? `
+  <div class="section-header">SCREENSHOTY</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+    ${screenshotImgs}
+  </div>` : ""}
 
   <div class="section-header">6. LOG EMOCJI</div>
   <table>
