@@ -2,6 +2,7 @@ import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/db"
 import { getYesterdayLesson } from "@/lib/bridges"
 import { LessonBanner } from "@/components/dashboard/LessonBanner"
+import { CalibrationBanner } from "@/components/dashboard/CalibrationBanner"
 import { CalendarView } from "@/components/dashboard/CalendarView"
 import { WeekHistory, type WeekEntry } from "@/components/dashboard/WeekHistory"
 import { PlaybookView } from "@/components/dashboard/PlaybookView"
@@ -136,6 +137,15 @@ export default async function DashboardPage({
         className="mx-auto px-4 py-6 flex flex-col gap-6"
         style={{ maxWidth: "var(--content-max-width)" }}
       >
+        {(() => {
+          if (currentWeeklyReview) return null
+          const prevWeekStart = new Date(weekStartDate)
+          prevWeekStart.setUTCDate(prevWeekStart.getUTCDate() - 7)
+          const latest = (calibrationGoals as any[]).find(
+            (g) => new Date(g.setAt) >= prevWeekStart && new Date(g.setAt) < weekStartDate
+          ) ?? null
+          return latest ? <CalibrationBanner goal={latest} /> : null
+        })()}
         {lessonForBanner && <LessonBanner lesson={lessonForBanner} />}
 
         {/* <PrimaryAction
