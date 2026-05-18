@@ -68,8 +68,7 @@ export default async function StatisticsPage({
   const setupStats = computeSetupStats(trades)
   const global = computeGlobalStats(trades)
 
-  const thStyle: React.CSSProperties = {
-    background: "var(--color-mid)",
+  const thBase: React.CSSProperties = {
     color: "#fff",
     padding: "5px 8px",
     fontSize: "var(--font-size-tiny)",
@@ -77,13 +76,26 @@ export default async function StatisticsPage({
     textAlign: "center",
     whiteSpace: "nowrap",
   }
-  const tdStyle: React.CSSProperties = {
+  const tdBase: React.CSSProperties = {
     padding: "4px 8px",
     fontSize: "var(--font-size-tiny)",
     textAlign: "center",
     borderBottom: "0.5px solid var(--color-border)",
     verticalAlign: "middle",
   }
+
+  // Column group tints: th uses dark overlays on #16213E, td uses light overlays on white
+  const G = {
+    setup:     { th: "#16213E",                td: "transparent" },
+    trades:    { th: "#1a2540",                td: "rgba(0,0,0,0.03)" },
+    metrics:   { th: "#162850",                td: "rgba(80,120,220,0.05)" },
+    direction: { th: "#162e22",                td: "rgba(45,140,78,0.07)" },
+    tiers:     { th: "#261c10",                td: "rgba(200,160,40,0.08)" },
+  }
+  const thStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
+    ({ ...thBase, background: G[g].th, ...extra })
+  const tdStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
+    ({ ...tdBase, background: G[g].td, ...extra })
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
@@ -170,17 +182,17 @@ export default async function StatisticsPage({
               <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 580 }}>
                 <thead>
                   <tr>
-                    <th style={{ ...thStyle, textAlign: "left" }}>Setup</th>
-                    <th style={{ ...thStyle, width: 60 }}>Trades</th>
-                    <th style={{ ...thStyle, width: 72 }}>Win Rate</th>
-                    <th style={{ ...thStyle, width: 60 }}>Avg R</th>
-                    <th style={{ ...thStyle, width: 80 }}>P&amp;L ($)</th>
-                    <th style={{ ...thStyle, width: 76 }}>P. Factor</th>
-                    <th style={{ ...thStyle, width: 48 }}>Long</th>
-                    <th style={{ ...thStyle, width: 48 }}>Short</th>
-                    <th style={{ ...thStyle, width: 48 }}>Tier A</th>
-                    <th style={{ ...thStyle, width: 48 }}>Tier B</th>
-                    <th style={{ ...thStyle, width: 48 }}>Tier C</th>
+                    <th style={thStyle("setup",     { textAlign: "left" })}>Setup</th>
+                    <th style={thStyle("trades",    { width: 60 })}>Trades</th>
+                    <th style={thStyle("metrics",   { width: 72 })}>Win Rate</th>
+                    <th style={thStyle("metrics",   { width: 60 })}>Avg R</th>
+                    <th style={thStyle("metrics",   { width: 80 })}>P&amp;L ($)</th>
+                    <th style={thStyle("metrics",   { width: 76 })}>P. Factor</th>
+                    <th style={thStyle("direction", { width: 48 })}>Long</th>
+                    <th style={thStyle("direction", { width: 48 })}>Short</th>
+                    <th style={thStyle("tiers",     { width: 48 })}>Tier A</th>
+                    <th style={thStyle("tiers",     { width: 48 })}>Tier B</th>
+                    <th style={thStyle("tiers",     { width: 48 })}>Tier C</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -191,61 +203,25 @@ export default async function StatisticsPage({
                         background: s.setupId === null ? "var(--color-light)" : "var(--color-white)",
                       }}
                     >
-                      <td
-                        style={{
-                          ...tdStyle,
-                          textAlign: "left",
-                          fontWeight: s.setupId === null ? 400 : 600,
-                          color: s.setupId === null ? "var(--color-muted)" : "var(--color-text)",
-                        }}
-                      >
+                      <td style={tdStyle("setup", { textAlign: "left", fontWeight: s.setupId === null ? 400 : 600, color: s.setupId === null ? "var(--color-muted)" : "var(--color-text)" })}>
                         {s.setupName}
                       </td>
-                      <td style={tdStyle}>{s.trades}</td>
-                      <td
-                        style={{
-                          ...tdStyle,
-                          color:
-                            s.winRate !== null
-                              ? s.winRate >= 0.5
-                                ? "#2D8C4E"
-                                : "#D96060"
-                              : "var(--color-muted)",
-                        }}
-                      >
+                      <td style={tdStyle("trades")}>{s.trades}</td>
+                      <td style={tdStyle("metrics", { color: s.winRate !== null ? (s.winRate >= 0.5 ? "#2D8C4E" : "#D96060") : "var(--color-muted)" })}>
                         {pct(s.winRate)}
                       </td>
-                      <td
-                        style={{
-                          ...tdStyle,
-                          color:
-                            s.avgR !== null
-                              ? s.avgR > 0
-                                ? "#2D8C4E"
-                                : s.avgR < 0
-                                ? "#D96060"
-                                : undefined
-                              : "var(--color-muted)",
-                        }}
-                      >
+                      <td style={tdStyle("metrics", { color: s.avgR !== null ? (s.avgR > 0 ? "#2D8C4E" : s.avgR < 0 ? "#D96060" : undefined) : "var(--color-muted)" })}>
                         {s.avgR !== null ? s.avgR.toFixed(2) : "—"}
                       </td>
-                      <td
-                        style={{
-                          ...tdStyle,
-                          color:
-                            s.totalPnL > 0 ? "#2D8C4E" : s.totalPnL < 0 ? "#D96060" : undefined,
-                        }}
-                      >
-                        {s.totalPnL > 0 ? "+" : ""}
-                        {s.totalPnL.toFixed(2)}
+                      <td style={tdStyle("metrics", { color: s.totalPnL > 0 ? "#2D8C4E" : s.totalPnL < 0 ? "#D96060" : undefined })}>
+                        {s.totalPnL > 0 ? "+" : ""}{s.totalPnL.toFixed(2)}
                       </td>
-                      <td style={tdStyle}>{pf(s.profitFactor)}</td>
-                      <td style={tdStyle}>{s.long || "—"}</td>
-                      <td style={tdStyle}>{s.short || "—"}</td>
-                      <td style={tdStyle}>{s.tierA || "—"}</td>
-                      <td style={tdStyle}>{s.tierB || "—"}</td>
-                      <td style={tdStyle}>{s.tierC || "—"}</td>
+                      <td style={tdStyle("metrics")}>{pf(s.profitFactor)}</td>
+                      <td style={tdStyle("direction")}>{s.long || "—"}</td>
+                      <td style={tdStyle("direction")}>{s.short || "—"}</td>
+                      <td style={tdStyle("tiers")}>{s.tierA || "—"}</td>
+                      <td style={tdStyle("tiers")}>{s.tierB || "—"}</td>
+                      <td style={tdStyle("tiers")}>{s.tierC || "—"}</td>
                     </tr>
                   ))}
                 </tbody>
