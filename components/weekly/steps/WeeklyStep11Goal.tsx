@@ -4,12 +4,15 @@ import { useRouter } from "next/navigation"
 import { WeeklyLayout } from "@/components/weekly/WeeklyLayout"
 import { SectionHeader } from "@/components/forge"
 import { updateWeeklyReview } from "@/actions/weekly"
+import { upsertCalibrationGoal } from "@/actions/calibration"
 import type { WeeklyReview } from "@prisma/client"
 import type { WeeklyStats } from "@/lib/weekly-stats"
 
-interface Props { review: WeeklyReview; stats: WeeklyStats; weekStart: string; step: number }
+type PrevGoal = { goalText: string; probabilityAssigned: number; outcomeScore: number | null } | null
 
-export function WeeklyStep11Goal({ review, weekStart, step }: Props) {
+interface Props { review: WeeklyReview; stats: WeeklyStats; weekStart: string; step: number; prevWeekGoal?: PrevGoal }
+
+export function WeeklyStep11Goal({ review, weekStart, step, prevWeekGoal }: Props) {
   const router = useRouter()
   const [oneSentence, setOneSentence] = useState(review.oneSentenceSummary ?? "")
   const [mentor, setMentor] = useState(review.mentorTopic ?? "")
@@ -33,6 +36,9 @@ export function WeeklyStep11Goal({ review, weekStart, step }: Props) {
       processGoalProbability: isNaN(p) ? undefined : p,
       status: "COMPLETED",
     })
+    if (goal && !isNaN(p)) {
+      await upsertCalibrationGoal(weekStart, goal, p)
+    }
     router.push(`/weekly/${weekStart}/complete`)
   }
 
@@ -66,10 +72,32 @@ export function WeeklyStep11Goal({ review, weekStart, step }: Props) {
       totalSteps={11}
       stepLabel="Cel + Mentor + Stop-loss"
       prevHref={`/weekly/${weekStart}/step/10`}
+      onNext={handleFinish}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Zakończ przegląd →"}
       lastWeekGoalRecap={review.lastWeekGoalRecap}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="16" title="MENTOR · STOP-LOSS · SYSTEM CHECK · CEL" />
+
+        {prevWeekGoal && (
+          <div style={{ padding: "8px 12px", background: "var(--color-light)", borderLeft: "3px solid var(--color-gold)", borderRadius: 2, fontSize: "var(--font-size-tiny)" }}>
+            <span style={{ color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+              Poprzedni cel:
+            </span>
+            <span style={{ color: "var(--color-text)", marginLeft: 8 }}>{prevWeekGoal.goalText}</span>
+            <span style={{ color: "var(--color-muted)", marginLeft: 8 }}>({prevWeekGoal.probabilityAssigned}%)</span>
+            {prevWeekGoal.outcomeScore !== null && (
+              <span style={{
+                marginLeft: 10, padding: "1px 8px", borderRadius: 3,
+                background: prevWeekGoal.outcomeScore >= 0.5 ? "#2D6A4F" : "#D96060",
+                color: "#fff", fontWeight: 700,
+              }}>
+                {Math.round(prevWeekGoal.outcomeScore * 100)}%
+              </span>
+            )}
+          </div>
+        )}
 
         {fields.map(({ label, value, set }) => (
           <div key={label}>
@@ -135,27 +163,6 @@ export function WeeklyStep11Goal({ review, weekStart, step }: Props) {
         </div>
       </div>
 
-      <div
-        className="sticky bottom-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/weekly/${weekStart}/step/10`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleFinish}
-            disabled={saving}
-            className="px-4 py-2 rounded text-sm font-medium"
-            style={{ background: "var(--color-mid)", color: "var(--color-white)" }}
-          >
-            {saving ? "Zapisuję..." : "Zakończ przegląd →"}
-          </button>
-        </div>
-      </div>
     </WeeklyLayout>
   )
 }

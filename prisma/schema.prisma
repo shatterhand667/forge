@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  email          String         @unique
-  password       String
-  createdAt      DateTime       @default(now())
-  dailyCards     DailyCard[]
-  weeklyReviews  WeeklyReview[]
+  id               String           @id @default(cuid())
+  email            String           @unique
+  password         String
+  createdAt        DateTime         @default(now())
+  dailyCards       DailyCard[]
+  weeklyReviews    WeeklyReview[]
   calibrationGoals CalibrationGoal[]
+  playbook         Playbook?
 }
 
 model DailyCard {
@@ -71,6 +72,7 @@ model DailyCard {
 
   trades         Trade[]
   emotionEntries EmotionEntry[]
+  screenshots    DailyCardScreenshot[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -90,20 +92,24 @@ enum WeeklyStatus {
 }
 
 model Trade {
-  id          String    @id @default(cuid())
-  dailyCardId String
-  dailyCard   DailyCard @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
-  time        String?
-  trigger     String?
-  setup       String?
-  direction   String?
-  tier        String?
-  rExpected   Float?
-  rActual     Float?
-  decision    String?
-  emotion     String?
-  lessons     String?
-  createdAt   DateTime  @default(now())
+  id              String         @id @default(cuid())
+  dailyCardId     String
+  dailyCard       DailyCard      @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
+  playbookSetupId String?
+  playbookSetup   PlaybookSetup? @relation(fields: [playbookSetupId], references: [id], onDelete: SetNull)
+  time            String?
+  instrument      String?
+  trigger         String?
+  direction       String?
+  tier            String?
+  volume          Float?
+  rExpected       Float?
+  rActual         Float?
+  profitRaw       Float?
+  decision        String?
+  emotion         String?
+  lessons         String?
+  createdAt       DateTime       @default(now())
 }
 
 model EmotionEntry {
@@ -116,6 +122,14 @@ model EmotionEntry {
   meaningSignal  String?
   reaction       String?
   createdAt      DateTime  @default(now())
+}
+
+model DailyCardScreenshot {
+  id          String    @id @default(cuid())
+  dailyCardId String
+  dailyCard   DailyCard @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
+  path        String
+  createdAt   DateTime  @default(now())
 }
 
 model WeeklyReview {
@@ -157,6 +171,9 @@ model WeeklyReview {
   identityWasNot              String?
   threatsMap                  String?
 
+  // Section 1 — daily lesson applications (yesterdayLesson per day + applied: true/false/null)
+  lessonApplications   Json?
+
   // Section 10 — repeating errors table
   repeatingErrors      Json?
 
@@ -188,6 +205,60 @@ model WeeklyReview {
   @@unique([userId, weekStart])
 }
 
+model Playbook {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Tier A
+  tierADescription   String?
+  tierACriteria      Json?
+  tierAMarketContext String?
+  tierAInvalidation  String?
+  tierANotes         String?
+
+  // Tier B
+  tierBDescription   String?
+  tierBCriteria      Json?
+  tierBMarketContext String?
+  tierBInvalidation  String?
+  tierBNotes         String?
+
+  // Tier C
+  tierCDescription   String?
+  tierCCriteria      Json?
+  tierCMarketContext String?
+  tierCInvalidation  String?
+  tierCNotes         String?
+
+  // Risk rules
+  maxDailyLoss      Float?
+  maxWeeklyLoss     Float?
+  maxRiskPerTrade   Float?
+  maxOpenPositions  Int?
+  hardRules         Json?
+
+  setups    PlaybookSetup[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model PlaybookSetup {
+  id           String   @id @default(cuid())
+  playbookId   String
+  playbook     Playbook @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  name         String   @default("")
+  tier         String?
+  description  String?
+  criteria     Json?
+  invalidation String?
+  bestContext  String?
+  order        Int      @default(0)
+  trades       Trade[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model CalibrationGoal {
   id                  String    @id @default(cuid())
   userId              String
@@ -199,4 +270,6 @@ model CalibrationGoal {
   setAt               DateTime  @default(now())
   evaluatedAt         DateTime?
   outcome             String?
+  dailyOutcomes       Json?
+  outcomeScore        Float?
 }

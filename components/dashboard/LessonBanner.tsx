@@ -14,7 +14,7 @@ export function LessonBanner({ lesson }: LessonBannerProps) {
       <div>
         <p
           className="font-medium mb-1"
-          style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
+          style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
         >
           Pamiętaj o lekcji z wczoraj:
         </p>

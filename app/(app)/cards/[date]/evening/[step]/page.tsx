@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation"
 import { getDailyCard } from "@/actions/cards"
+import { getPlaybookSetups } from "@/actions/playbook"
+import { getPrevWeekGoal } from "@/actions/calibration"
 import { Step6TradeLog } from "@/components/wizard/steps/evening/Step6TradeLog"
 import { Step7EmotionLog } from "@/components/wizard/steps/evening/Step7EmotionLog"
 import { Step8AreaScores } from "@/components/wizard/steps/evening/Step8AreaScores"
@@ -12,7 +14,6 @@ import { Step14Identity } from "@/components/wizard/steps/evening/Step14Identity
 import { Step15Tomorrow } from "@/components/wizard/steps/evening/Step15Tomorrow"
 
 const STEP_COMPONENTS = {
-  6: Step6TradeLog,
   7: Step7EmotionLog,
   8: Step8AreaScores,
   9: Step9Strengths,
@@ -35,6 +36,21 @@ export default async function EveningStepPage({
 
   const card = await getDailyCard(date)
   if (!card) redirect(`/cards/${date}/morning/1`)
+
+  if (step === 6) {
+    const playbookSetups = await getPlaybookSetups()
+    return <Step6TradeLog card={card} date={date} step={step} playbookSetups={playbookSetups} />
+  }
+
+  if (step === 13) {
+    const [y, m, d2] = date.split("-").map(Number)
+    const dow = new Date(Date.UTC(y, m - 1, d2)).getUTCDay()
+    const daysFromMon = dow === 0 ? 6 : dow - 1
+    const mon = new Date(Date.UTC(y, m - 1, d2 - daysFromMon))
+    const weekStartStr = `${mon.getUTCFullYear()}-${String(mon.getUTCMonth() + 1).padStart(2, "0")}-${String(mon.getUTCDate()).padStart(2, "0")}`
+    const weeklyGoal = await getPrevWeekGoal(weekStartStr)
+    return <Step13Evaluation card={card} date={date} step={step} weeklyGoal={weeklyGoal} />
+  }
 
   const StepComponent = STEP_COMPONENTS[step as keyof typeof STEP_COMPONENTS]
   return <StepComponent card={card} date={date} step={step} />

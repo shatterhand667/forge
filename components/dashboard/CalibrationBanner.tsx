@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useTransition } from "react"
-import { evaluateGoal } from "@/actions/calibration"
+import { useState } from "react"
+
+type DailyEntry = { date: string; achieved: boolean }
 
 type Goal = {
   id: string
@@ -10,17 +11,11 @@ type Goal = {
   setAt: Date
   sourceId: string | null
   outcome: string | null
+  dailyOutcomes: unknown
+  outcomeScore: number | null
 }
 
 export function CalibrationBanner({ goal }: { goal: Goal }) {
-  const [outcome, setOutcome] = useState<string | null>(goal.outcome)
-  const [, startTransition] = useTransition()
-
-  function handle(result: "achieved" | "not_achieved") {
-    setOutcome(result)
-    startTransition(() => evaluateGoal(goal.id, result))
-  }
-
   const weekLabel = goal.sourceId
     ? (() => {
         const parts = goal.sourceId.split("-").map(Number)
@@ -30,58 +25,71 @@ export function CalibrationBanner({ goal }: { goal: Goal }) {
       })()
     : null
 
-  const accentColor = outcome === "achieved" ? "#2D6A4F" : outcome === "not_achieved" ? "#D96060" : "#2D6A4F"
+  const daily = Array.isArray(goal.dailyOutcomes) ? (goal.dailyOutcomes as DailyEntry[]) : []
+  const score = goal.outcomeScore
+  const filledDays = daily.length
+  const achievedDays = daily.filter((d) => d.achieved).length
+
+  const weekDays = goal.sourceId
+    ? (() => {
+        const [y, m, d2] = goal.sourceId.split("-").map(Number)
+        return Array.from({ length: 5 }, (_, i) => {
+          const dt = new Date(Date.UTC(y, m - 1, d2 + 7 + i))
+          return dt.toISOString().split("T")[0]
+        })
+      })()
+    : []
+
+  const accentColor = score !== null ? (score >= 0.5 ? "#2D6A4F" : "#D96060") : "#2D6A4F"
 
   return (
     <div
       className="rounded px-4 py-3"
       style={{ background: "var(--color-light)", borderLeft: `4px solid ${accentColor}` }}
     >
-      <p
-        className="font-medium mb-1"
-        style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
-      >
-        Cel tygodniowy{weekLabel ? ` (${weekLabel})` : ""} — czy osiągnięty?
-      </p>
-      <div className="flex items-center justify-between gap-4 mt-1">
-        <p style={{ fontSize: "var(--font-size-body)", color: "var(--color-text)", flex: 1 }}>
-          {goal.goalText}
-          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-tiny)", marginLeft: 8 }}>
-            ({goal.probabilityAssigned}%)
-          </span>
-        </p>
-        {outcome === null ? (
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => handle("achieved")}
-              style={{
-                fontSize: "var(--font-size-tiny)", padding: "3px 12px", borderRadius: 4,
-                border: "1px solid #2D6A4F", background: "#2D6A4F", color: "#fff", cursor: "pointer",
-              }}
-            >
-              Tak
-            </button>
-            <button
-              onClick={() => handle("not_achieved")}
-              style={{
-                fontSize: "var(--font-size-tiny)", padding: "3px 12px", borderRadius: 4,
-                border: "1px solid #D96060", background: "#D96060", color: "#fff", cursor: "pointer",
-              }}
-            >
-              Nie
-            </button>
-          </div>
-        ) : (
-          <span
-            style={{
-              fontSize: "var(--font-size-tiny)", padding: "3px 12px", borderRadius: 4,
-              background: accentColor, color: "#fff", fontWeight: 700, flexShrink: 0,
-            }}
+      <div className="flex items-start justify-between gap-4">
+        <div style={{ flex: 1 }}>
+          <p
+            className="font-medium mb-1"
+            style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
           >
-            {outcome === "achieved" ? "Osiągnięty ✓" : "Nie osiągnięty ✗"}
+            Cel tygodniowy{weekLabel ? ` (${weekLabel})` : ""}
+          </p>
+          <p style={{ fontSize: "var(--font-size-body)", color: "var(--color-text)" }}>
+            {goal.goalText}
+            <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-tiny)", marginLeft: 8 }}>
+              ({goal.probabilityAssigned}%)
+            </span>
+          </p>
+        </div>
+        {score !== null && (
+          <span style={{
+            fontSize: "var(--font-size-tiny)", padding: "3px 10px", borderRadius: 4,
+            background: accentColor, color: "#fff", fontWeight: 700, flexShrink: 0, alignSelf: "center",
+          }}>
+            {Math.round(score * 100)}%
           </span>
         )}
       </div>
+
+      {weekDays.length > 0 && (
+        <div className="flex items-center gap-3 mt-3">
+          {weekDays.map((dateStr, i) => {
+            const entry = daily.find((d) => d.date === dateStr)
+            const dayLabels = ["Pn", "Wt", "Śr", "Cz", "Pt"]
+            const color = entry === undefined ? "var(--color-border)" : entry.achieved ? "#2D6A4F" : "#D96060"
+            return (
+              <div key={dateStr} className="flex items-center gap-1">
+                <span style={{ fontSize: 9, color: "var(--color-muted)" }}>{dayLabels[i]}</span>
+                <span style={{
+                  display: "block", width: 9, height: 9, borderRadius: "50%",
+                  background: color, flexShrink: 0,
+                }} />
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
