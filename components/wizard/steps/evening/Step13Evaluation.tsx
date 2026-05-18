@@ -38,6 +38,9 @@ export function Step13Evaluation({ card, date, step }: Props) {
       totalSteps={15}
       stepLabel="Ocena dzienna"
       prevHref={`/cards/${date}/evening/12`}
+      onNext={handleNext}
+      nextDisabled={saving}
+      nextLabel={saving ? "Zapisuję..." : "Dalej →"}
     >
       <div className="flex flex-col gap-4">
         <SectionHeader number="12" title="OCENA DZIENNA" />
@@ -71,31 +74,10 @@ export function Step13Evaluation({ card, date, step }: Props) {
           </div>
 
           <TextInput label="P&L:" value={pl} onChange={setPl} placeholder="np. +1.5R lub -250 PLN" />
-          <GoldCircles label="Ogólna ocena:" value={overallScore} onChange={setOverallScore} />
+          <GoldCircles label="Ogólna ocena (1–10):" value={overallScore} onChange={setOverallScore} options={[1,2,3,4,5,6,7,8,9,10]} />
         </div>
       </div>
 
-      <div
-        className="fixed bottom-0 left-0 right-0 border-t"
-        style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
-      >
-        <div
-          className="mx-auto px-4 py-3 flex justify-between"
-          style={{ maxWidth: "var(--content-max-width)" }}
-        >
-          <a href={`/cards/${date}/evening/12`} style={{ color: "var(--color-muted)", fontSize: 14 }}>
-            ← Wstecz
-          </a>
-          <button
-            onClick={handleNext}
-            disabled={saving}
-            className="px-4 py-2 rounded text-sm font-medium"
-            style={{ background: "var(--color-mid)", color: "var(--color-white)" }}
-          >
-            {saving ? "Zapisuję..." : "Dalej →"}
-          </button>
-        </div>
-      </div>
     </WizardLayout>
   )
 }

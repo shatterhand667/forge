@@ -2,16 +2,17 @@ interface GoldCirclesProps {
   label: string
   value: number | null
   onChange: (value: number) => void
+  options?: number[]
 }
 
-export function GoldCircles({ label, value, onChange }: GoldCirclesProps) {
+export function GoldCircles({ label, value, onChange, options = [1, 2, 3, 4, 5] }: GoldCirclesProps) {
   return (
     <div className="flex items-center gap-3 py-2">
       <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)" }}>
         {label}
       </span>
       <div className="flex gap-2" role="radiogroup" aria-label={label}>
-        {[1, 2, 3, 4, 5].map((n) => (
+        {options.map((n) => (
           <label key={n} className="cursor-pointer">
             <input
               type="radio"

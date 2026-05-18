@@ -3,22 +3,24 @@ interface DotRowProps {
   value: number | null
   onChange: (value: number) => void
   options?: number[]
+  labelWidth?: string
 }
 
-export function DotRow({ label, value, onChange, options = [1, 2, 3, 4, 5] }: DotRowProps) {
+export function DotRow({ label, value, onChange, options = [1, 2, 3, 4, 5], labelWidth }: DotRowProps) {
   return (
     <div className="flex items-center gap-2 py-1">
       <span
-        className="whitespace-nowrap"
+        className="whitespace-nowrap overflow-hidden text-ellipsis"
         style={{
           color: "var(--color-muted)",
           fontSize: "var(--font-size-label)",
-          minWidth: "90px",
+          minWidth: labelWidth ?? "90px",
+          maxWidth: labelWidth ?? "90px",
         }}
       >
         {label}
       </span>
-      <div className="flex gap-1.5" role="radiogroup" aria-label={label}>
+      <div className="flex" style={{ gap: options.length > 5 ? 4 : 6 }} role="radiogroup" aria-label={label}>
         {options.map((n) => (
           <label
             key={n}
