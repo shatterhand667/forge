@@ -88,6 +88,56 @@ function pct(n: number) {
   return n === 0 ? "—" : `${(n * 100).toFixed(0)}%`
 }
 
+function formatWeekRange(weekStart: string): string {
+  const [y, m, d] = weekStart.split("-").map(Number)
+  const fri = new Date(Date.UTC(y, m - 1, d + 4))
+  const pad = (n: number) => String(n).padStart(2, "0")
+  const monDay = pad(d)
+  const friDay = pad(fri.getUTCDate())
+  const monMonth = pad(m)
+  const friMonth = pad(fri.getUTCMonth() + 1)
+  if (monMonth === friMonth) return `${monDay}–${friDay}.${monMonth}`
+  return `${monDay}.${monMonth}–${friDay}.${friMonth}`
+}
+
+function ScoreRow({ label, avg, max }: { label: string; avg: number | null; max: number }) {
+  const filled = avg !== null ? Math.round(avg) : 0
+  return (
+    <div className="flex items-center gap-3">
+      <span style={{ minWidth: 160, color: "var(--color-muted)", fontSize: "var(--font-size-label)" }}>{label}</span>
+      <div className="flex gap-1">
+        {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
+          <span
+            key={n}
+            style={{
+              display: "block",
+              width: 14,
+              height: 14,
+              borderRadius: "50%",
+              border: "1.5px solid var(--color-gold)",
+              background: avg !== null && n <= filled ? "var(--color-gold)" : "transparent",
+            }}
+          />
+        ))}
+      </div>
+      <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)" }}>
+        {avg !== null ? avg.toFixed(1) : "—"}
+      </span>
+    </div>
+  )
+}
+
+function WeekLabel({ weekStart, sessionCount }: { weekStart: string; sessionCount: number }) {
+  return (
+    <td style={{ padding: "6px 8px", fontWeight: 600, color: "var(--color-text)", whiteSpace: "nowrap" }}>
+      <div>{formatWeekRange(weekStart)}</div>
+      <div style={{ fontWeight: 400, color: "var(--color-muted)", fontSize: "var(--font-size-tiny)" }}>
+        {sessionCount} {sessionCount === 1 ? "sesja" : sessionCount < 5 ? "sesje" : "sesji"}
+      </div>
+    </td>
+  )
+}
+
 export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }: Props) {
   const [maxDrawdown, setMaxDrawdown] = useState(review.maxDrawdown ?? "")
 
@@ -129,26 +179,26 @@ export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }
             <thead>
               <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
                 <th style={{ textAlign: "left", padding: "4px 8px", color: "var(--color-muted)" }}></th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Tradów</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Win%</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Avg R</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>PF</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Best R</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Worst R</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Max DD</th>
-                <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Net P&L</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Tradów</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Win%</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Avg R</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>PF</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Best R</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Worst R</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Max DD</th>
+                <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Net P&L</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
-                <td style={{ padding: "6px 8px", fontWeight: 600, color: "var(--color-text)" }}>Ten tydzień</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{stats.trades}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{pct(stats.winRate)}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{fmt(stats.avgR)}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{fmt(stats.profitFactor)}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{fmt(stats.bestR)}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>{fmt(stats.worstR)}</td>
-                <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                <WeekLabel weekStart={weekStart} sessionCount={stats.sessionCount} />
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{stats.trades}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{pct(stats.winRate)}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{fmt(stats.avgR)}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{fmt(stats.profitFactor)}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{fmt(stats.bestR)}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{fmt(stats.worstR)}</td>
+                <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>
                   <input
                     value={maxDrawdown}
                     onChange={e => setMaxDrawdown(e.target.value)}
@@ -165,7 +215,7 @@ export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }
                     }}
                   />
                 </td>
-                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 600,
+                <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 600, borderLeft: "0.5px solid var(--color-border)",
                   color: stats.totalPnL > 0 ? "#2D8C4E" : stats.totalPnL < 0 ? "#D96060" : "var(--color-muted)" }}>
                   {stats.totalPnL !== 0
                     ? `${stats.totalPnL > 0 ? "+" : ""}${stats.totalPnL.toFixed(2)}`
@@ -177,31 +227,34 @@ export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }
         </div>
 
         <p style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", fontStyle: "italic" }}>
-          Max DD wpisz ręcznie (z platformy brokerskiej). Net P&L wyliczane automatycznie z kart dziennych.
+          Max DD wpisz ręcznie (z platformy brokerskiej).
         </p>
 
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--font-size-tiny)" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
               <th style={{ textAlign: "left", padding: "4px 8px", color: "var(--color-muted)" }}></th>
-              <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Sen (h)</th>
-              <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Proces (1–10)</th>
-              <th style={{ padding: "4px 8px", color: "var(--color-muted)" }}>Mental (1–5)</th>
+              <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Sen (1–10)</th>
+              <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Energia (1–10)</th>
+              <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Fokus (1–10)</th>
+              <th style={{ padding: "4px 8px", color: "var(--color-muted)", borderLeft: "0.5px solid var(--color-border)" }}>Przygotowanie (1–10)</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style={{ padding: "6px 8px", fontWeight: 600, color: "var(--color-text)" }}>Ten tydzień</td>
-              <td style={{ padding: "6px 8px", textAlign: "center" }}>{fmt(stats.sleepAvg, 1)}</td>
-              <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                {stats.processAvg !== null ? stats.processAvg.toFixed(1) : "—"}
-              </td>
-              <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                {stats.mentalAvg !== null ? stats.mentalAvg.toFixed(1) : "—"}
-              </td>
+            <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+              <WeekLabel weekStart={weekStart} sessionCount={stats.sessionCount} />
+              <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{fmt(stats.sleepAvg, 1)}</td>
+              <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{stats.energyAvg !== null ? stats.energyAvg.toFixed(1) : "—"}</td>
+              <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{stats.focusAvg !== null ? stats.focusAvg.toFixed(1) : "—"}</td>
+              <td style={{ padding: "6px 8px", textAlign: "center", borderLeft: "0.5px solid var(--color-border)" }}>{stats.prepQualityAvg !== null ? stats.prepQualityAvg.toFixed(1) : "—"}</td>
             </tr>
           </tbody>
         </table>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "8px 0", borderBottom: "1px solid var(--color-border)" }}>
+          <ScoreRow label="Proces (1–10):" avg={stats.processAvg} max={10} />
+          <ScoreRow label="Ogólna ocena (1–10):" avg={stats.overallAvg} max={10} />
+        </div>
 
         {lessons.length > 0 && (
           <div className="flex flex-col gap-0 mt-2">

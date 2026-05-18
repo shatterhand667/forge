@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 
 export interface WeeklyStats {
+  sessionCount: number
   trades: number
   winRate: number
   avgR: number
@@ -22,8 +23,12 @@ export interface WeeklyStats {
     fri: DayStats
   }
   mentalPerDay: Array<number | null>
+  energyAvg: number | null
+  focusAvg: number | null
+  prepQualityAvg: number | null
   processAvg: number | null
   mentalAvg: number | null
+  overallAvg: number | null
 }
 
 interface TierStats {
@@ -121,6 +126,7 @@ export async function computeWeeklyStats(
   }
 
   return {
+    sessionCount: cards.length,
     trades: allTrades.length,
     winRate: withR.length > 0 ? wins.length / withR.length : 0,
     avgR: withR.length > 0 ? totalR / withR.length : 0,
@@ -138,7 +144,11 @@ export async function computeWeeklyStats(
     mentalPerDay: (["mon", "tue", "wed", "thu", "fri"] as const).map(
       (k) => byDay[k].mentalAfter
     ),
+    energyAvg: avg(cards.map((c) => c.energy)),
+    focusAvg: avg(cards.map((c) => c.focus)),
+    prepQualityAvg: avg(cards.map((c) => c.prepQuality)),
     processAvg: avg(Object.values(byDay).map((d) => d.processScore)),
     mentalAvg: avg(Object.values(byDay).map((d) => d.mentalAfter)),
+    overallAvg: avg(cards.map((c) => c.overallScore)),
   }
 }
