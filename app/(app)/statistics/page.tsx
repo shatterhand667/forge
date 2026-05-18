@@ -84,18 +84,17 @@ export default async function StatisticsPage({
     verticalAlign: "middle",
   }
 
-  // Column group tints: th uses dark overlays on #16213E, td uses light overlays on white
   const G = {
-    setup:     { th: "#16213E",                td: "transparent" },
-    trades:    { th: "#1a2540",                td: "rgba(0,0,0,0.03)" },
-    metrics:   { th: "#162850",                td: "rgba(80,120,220,0.05)" },
-    direction: { th: "#162e22",                td: "rgba(45,140,78,0.07)" },
-    tiers:     { th: "#261c10",                td: "rgba(200,160,40,0.08)" },
+    setup:     "transparent",
+    trades:    "rgba(0,0,0,0.03)",
+    metrics:   "rgba(80,120,220,0.05)",
+    direction: "rgba(45,140,78,0.07)",
+    tiers:     "rgba(200,160,40,0.08)",
   }
   const thStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...thBase, background: G[g].th, ...extra })
+    ({ ...thBase, background: "var(--color-mid)", ...extra })
   const tdStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...tdBase, background: G[g].td, ...extra })
+    ({ ...tdBase, background: G[g], ...extra })
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
