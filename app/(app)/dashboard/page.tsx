@@ -51,10 +51,15 @@ export default async function DashboardPage({
     getYesterdayLesson(userId, today),
   ])
 
-  const [allCards, currentWeeklyReview, pastWeeklyReviews, playbook, calibrationGoals] = await Promise.all([
+  const [allCardsRaw, currentWeeklyReview, pastWeeklyReviews, playbook, calibrationGoals] = await Promise.all([
     prisma.dailyCard.findMany({
       where: { userId },
-      select: { date: true, status: true },
+      select: {
+        date: true,
+        status: true,
+        processScore: true,
+        trades: { select: { profitRaw: true } },
+      },
     }),
     prisma.weeklyReview.findUnique({
       where: { userId_weekStart: { userId, weekStart: weekStartDate } },
@@ -67,6 +72,18 @@ export default async function DashboardPage({
     getPlaybook(),
     getCalibrationGoals(),
   ])
+
+  const allCards = allCardsRaw.map((c) => {
+    const tradesWithPnl = c.trades.filter((t) => t.profitRaw != null)
+    return {
+      date: c.date,
+      status: c.status,
+      processScore: c.processScore ?? null,
+      pnl: tradesWithPnl.length > 0
+        ? Math.round(tradesWithPnl.reduce((sum, t) => sum + t.profitRaw!, 0))
+        : null,
+    }
+  })
 
   const pastCards = allCards.filter((c) => new Date(c.date) < weekStartDate)
 

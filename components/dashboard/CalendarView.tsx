@@ -6,6 +6,8 @@ import Link from "next/link"
 interface CalendarCard {
   date: Date
   status: "STARTED" | "MORNING" | "COMPLETED"
+  processScore?: number | null
+  pnl?: number | null
 }
 
 interface CalendarViewProps {
@@ -52,7 +54,7 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
         const d = new Date(c.date)
         return d.getUTCFullYear() === year && d.getUTCMonth() + 1 === month
       })
-      .map((c) => [new Date(c.date).toISOString().split("T")[0], c.status])
+      .map((c) => [new Date(c.date).toISOString().split("T")[0], c])
   )
 
   const cells: (number | null)[] = [
@@ -119,8 +121,8 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
           if (!day) return <div key={`empty-${i}`} />
 
           const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
-          const status = cardMap.get(dateStr)
-
+          const card = cardMap.get(dateStr)
+          const status = card?.status
           const dateObj = new Date(year, month - 1, day)
           const dow = dateObj.getDay()
           const isWeekend = dow === 0 || dow === 6
@@ -154,6 +156,16 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
             ? "var(--color-white)"
             : "var(--color-text)"
 
+          const processScore = !isWeekend ? card?.processScore ?? null : null
+          const pnl = !isWeekend ? card?.pnl ?? null : null
+
+          const processColor = processScore != null
+            ? processScore >= 6 ? "#4ade80" : "#fca5a5"
+            : undefined
+          const pnlColor = pnl != null
+            ? pnl > 0 ? "#4ade80" : pnl < 0 ? "#fca5a5" : undefined
+            : undefined
+
           return (
             <Link
               key={dateStr}
@@ -165,9 +177,29 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
                 fontSize: "var(--font-size-tiny)",
                 background,
                 color: textColor,
+                position: "relative",
               }}
             >
               {day}
+              {(processScore != null || pnl != null) && (
+                <span style={{
+                  position: "absolute",
+                  bottom: 2,
+                  left: 4,
+                  right: 4,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 7,
+                  lineHeight: 1,
+                }}>
+                  {processScore != null && (
+                    <span style={{ color: processColor }}>{processScore}/10</span>
+                  )}
+                  {pnl != null && (
+                    <span style={{ color: pnlColor }}>{pnl >= 0 ? "+" : ""}€{pnl}</span>
+                  )}
+                </span>
+              )}
             </Link>
           )
         })}
