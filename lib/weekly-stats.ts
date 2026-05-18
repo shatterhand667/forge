@@ -7,6 +7,7 @@ export interface WeeklyStats {
   profitFactor: number
   bestR: number
   worstR: number
+  totalPnL: number
   sleepAvg: number
   byTier: {
     A: TierStats
@@ -21,6 +22,8 @@ export interface WeeklyStats {
     fri: DayStats
   }
   mentalPerDay: Array<number | null>
+  processAvg: number | null
+  mentalAvg: number | null
 }
 
 interface TierStats {
@@ -32,7 +35,7 @@ interface TierStats {
 
 interface DayStats {
   processScore: number | null
-  pl: string | null
+  pl: number | null
   mentalAfter: number | null
 }
 
@@ -61,6 +64,11 @@ function emptyDayStats(): DayStats {
   return { processScore: null, pl: null, mentalAfter: null }
 }
 
+function avg(vals: (number | null)[]): number | null {
+  const nonNull = vals.filter((v): v is number => v !== null)
+  return nonNull.length > 0 ? Math.round((nonNull.reduce((a, b) => a + b, 0) / nonNull.length) * 10) / 10 : null
+}
+
 export async function computeWeeklyStats(
   userId: string,
   weekStart: Date,
@@ -73,6 +81,7 @@ export async function computeWeeklyStats(
   })
 
   const allTrades = cards.flatMap((c) => c.trades)
+  const totalPnL = Math.round(allTrades.reduce((sum, t) => sum + (t.profitRaw ?? 0), 0) * 100) / 100
   const withR = allTrades.filter((t) => t.rActual !== null) as (Omit<(typeof allTrades)[number], "rActual"> & { rActual: number })[]
 
   const wins = withR.filter((t) => t.rActual > 0)
@@ -102,9 +111,10 @@ export async function computeWeeklyStats(
     const dow = new Date(card.date).getUTCDay()
     const key = DAY_INDEX_TO_KEY[dow]
     if (key) {
+      const dayPnL = card.trades.reduce((sum, t) => sum + (t.profitRaw ?? 0), 0)
       byDay[key] = {
         processScore: card.processScore,
-        pl: card.pl,
+        pl: card.trades.length > 0 ? Math.round(dayPnL * 100) / 100 : null,
         mentalAfter: card.mentalAfter,
       }
     }
@@ -117,6 +127,7 @@ export async function computeWeeklyStats(
     profitFactor: grossLoss > 0 ? grossWin / grossLoss : 0,
     bestR: withR.length > 0 ? Math.max(...withR.map((t) => t.rActual)) : 0,
     worstR: withR.length > 0 ? Math.min(...withR.map((t) => t.rActual)) : 0,
+    totalPnL,
     sleepAvg,
     byTier: {
       A: calcTierStats(tierGroups.A),
@@ -127,5 +138,7 @@ export async function computeWeeklyStats(
     mentalPerDay: (["mon", "tue", "wed", "thu", "fri"] as const).map(
       (k) => byDay[k].mentalAfter
     ),
+    processAvg: avg(Object.values(byDay).map((d) => d.processScore)),
+    mentalAvg: avg(Object.values(byDay).map((d) => d.mentalAfter)),
   }
 }
