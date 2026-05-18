@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 
 interface WizardLayoutProps {
@@ -11,6 +13,7 @@ interface WizardLayoutProps {
   prevHref?: string
   nextLabel?: string
   nextDisabled?: boolean
+  onNext?: () => void
   lesson?: string | null
 }
 
@@ -26,6 +29,7 @@ export function WizardLayout({
   prevHref,
   nextLabel = "Dalej →",
   nextDisabled = false,
+  onNext,
   lesson,
 }: WizardLayoutProps) {
   const progressPercent = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100
@@ -58,15 +62,33 @@ export function WizardLayout({
               Krok {currentStep} z {TOTAL_STEPS}
             </span>
           </div>
-          {/* Progress bar */}
-          <div
-            className="mt-2 rounded-full overflow-hidden"
-            style={{ height: 3, background: "var(--color-border)" }}
-          >
-            <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{ width: `${progressPercent}%`, background: "var(--color-gold)" }}
-            />
+          {/* Step dots */}
+          <div className="flex items-center gap-1 mt-2">
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => {
+              const s = i + 1
+              const href = s <= 5
+                ? `/cards/${date}/morning/${s}`
+                : `/cards/${date}/evening/${s}`
+              const isCurrent = s === currentStep
+              const isDone = s < currentStep
+              return (
+                <Link key={s} href={href} style={{ display: "flex", alignItems: "center", gap: 0, flex: 1 }}>
+                  <span style={{
+                    display: "block",
+                    width: "100%",
+                    height: isCurrent ? 5 : 3,
+                    borderRadius: 2,
+                    background: isCurrent
+                      ? "var(--color-gold)"
+                      : isDone
+                      ? "var(--color-gold)"
+                      : "var(--color-border)",
+                    opacity: isDone ? 0.5 : 1,
+                    transition: "all 0.2s",
+                  }} />
+                </Link>
+              )
+            })}
           </div>
           <p
             className="mt-1"
@@ -102,13 +124,13 @@ export function WizardLayout({
       </div>
 
       {/* Content */}
-      <div className="mx-auto px-4 py-6" style={{ maxWidth: "var(--content-max-width)" }}>
+      <div className="mx-auto px-4 py-6 pb-20" style={{ maxWidth: "var(--content-max-width)" }}>
         {children}
       </div>
 
       {/* Navigation */}
       <div
-        className="sticky bottom-0 border-t"
+        className="fixed bottom-0 left-0 right-0 border-t z-10"
         style={{ background: "var(--color-white)", borderColor: "var(--color-border)" }}
       >
         <div
@@ -123,7 +145,22 @@ export function WizardLayout({
             <span />
           )}
 
-          {nextHref && (
+          {onNext ? (
+            <button
+              onClick={onNext}
+              disabled={nextDisabled}
+              className="px-4 py-2 rounded text-sm font-medium"
+              style={{
+                background: nextDisabled ? "var(--color-border)" : "var(--color-mid)",
+                color: "var(--color-white)",
+                opacity: nextDisabled ? 0.6 : 1,
+                cursor: nextDisabled ? "not-allowed" : "pointer",
+                border: "none",
+              }}
+            >
+              {nextLabel}
+            </button>
+          ) : nextHref ? (
             <Link
               href={nextHref}
               className="px-4 py-2 rounded text-sm font-medium"
@@ -135,7 +172,7 @@ export function WizardLayout({
             >
               {nextLabel}
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
