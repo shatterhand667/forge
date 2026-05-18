@@ -8,6 +8,7 @@ export interface Column {
   width?: string
   type?: "text" | "number" | "select" | "textarea"
   options?: string[]
+  tooltip?: string
 }
 
 interface TableInputProps {
@@ -19,12 +20,14 @@ interface TableInputProps {
   emptyRows?: number
 }
 
-function AutoTextarea({
+export function AutoTextarea({
   value,
   onChange,
+  style,
 }: {
   value: string
   onChange: (v: string) => void
+  style?: React.CSSProperties
 }) {
   const ref = useRef<HTMLTextAreaElement>(null)
 
@@ -52,6 +55,7 @@ function AutoTextarea({
         overflow: "hidden",
         lineHeight: "1.4",
         padding: "2px 0",
+        ...style,
       }}
     />
   )
@@ -68,7 +72,7 @@ export function TableInput({
   const placeholderCount = rows.length === 0 ? emptyRows : 0
 
   return (
-    <div className="overflow-x-auto">
+    <div className="w-full">
       <table className="w-full text-left border-collapse">
         <thead>
           <tr style={{ background: "var(--color-mid)" }}>
@@ -82,7 +86,37 @@ export function TableInput({
                   width: col.width,
                 }}
               >
-                {col.label}
+                <span className="flex items-center gap-1">
+                  {col.label}
+                  {col.tooltip && (
+                    <span className="relative group inline-flex items-center">
+                      <span
+                        className="cursor-help leading-none"
+                        style={{ fontSize: 10, opacity: 0.75 }}
+                      >
+                        ⓘ
+                      </span>
+                      <span
+                        className="absolute z-50 hidden group-hover:block rounded shadow-lg"
+                        style={{
+                          bottom: "calc(100% + 6px)",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          background: "var(--color-text)",
+                          color: "var(--color-white)",
+                          fontSize: "var(--font-size-tiny)",
+                          padding: "6px 8px",
+                          width: 200,
+                          lineHeight: 1.5,
+                          fontWeight: "normal",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        {col.tooltip}
+                      </span>
+                    </span>
+                  )}
+                </span>
               </th>
             ))}
           </tr>
@@ -91,7 +125,7 @@ export function TableInput({
           {rows.map((row, i) => (
             <tr key={i} style={{ borderBottom: `0.5px solid var(--color-border)` }}>
               {columns.map((col) => (
-                <td key={col.id} className="px-1 py-0.5" style={{ verticalAlign: "top" }}>
+                <td key={col.id} className="px-1 py-0.5" style={{ verticalAlign: "top", borderRight: `0.5px solid var(--color-border)` }}>
                   {col.type === "select" && col.options ? (
                     <select
                       value={String(row[col.id] ?? "")}
@@ -134,7 +168,7 @@ export function TableInput({
           {Array.from({ length: placeholderCount }).map((_, i) => (
             <tr key={`ph-${i}`} style={{ borderBottom: `0.5px solid var(--color-border)` }}>
               {columns.map((col) => (
-                <td key={col.id} className="px-1 py-0.5">
+                <td key={col.id} className="px-1 py-0.5" style={{ borderRight: `0.5px solid var(--color-border)` }}>
                   <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-border)" }}>—</span>
                 </td>
               ))}
@@ -145,8 +179,16 @@ export function TableInput({
       <button
         type="button"
         onClick={onAddRow}
-        className="mt-2 text-sm"
-        style={{ color: "var(--color-muted)" }}
+        className="mt-2"
+        style={{
+          fontSize: "var(--font-size-tiny)",
+          color: "var(--color-mid)",
+          border: `1px solid var(--color-border)`,
+          borderRadius: 4,
+          padding: "4px 12px",
+          background: "var(--color-white)",
+          cursor: "pointer",
+        }}
       >
         {addLabel}
       </button>
