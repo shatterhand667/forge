@@ -16,6 +16,8 @@ type Goal = {
 }
 
 export function CalibrationBanner({ goal }: { goal: Goal }) {
+  const [collapsed, setCollapsed] = useState(false)
+
   const weekLabel = goal.sourceId
     ? (() => {
         const parts = goal.sourceId.split("-").map(Number)
@@ -47,48 +49,55 @@ export function CalibrationBanner({ goal }: { goal: Goal }) {
       className="rounded px-4 py-3"
       style={{ background: "var(--color-light)", borderLeft: `4px solid ${accentColor}` }}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div style={{ flex: 1 }}>
-          <p
-            className="font-medium mb-1"
-            style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
-          >
-            Cel tygodniowy{weekLabel ? ` (${weekLabel})` : ""}
-          </p>
-          <p style={{ fontSize: "var(--font-size-body)", color: "var(--color-text)" }}>
-            {goal.goalText}
-            <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-tiny)", marginLeft: 8 }}>
-              ({goal.probabilityAssigned}%)
-            </span>
-          </p>
-        </div>
-        {score !== null && (
-          <span style={{
-            fontSize: "var(--font-size-tiny)", padding: "3px 10px", borderRadius: 4,
-            background: accentColor, color: "#fff", fontWeight: 700, flexShrink: 0, alignSelf: "center",
-          }}>
-            {Math.round(score * 100)}%
-          </span>
-        )}
-      </div>
+      <button
+        onClick={() => setCollapsed(c => !c)}
+        className="flex items-center justify-between w-full"
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left" }}
+      >
+        <p className="font-medium" style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+          Cel tygodniowy{weekLabel ? ` (${weekLabel})` : ""}
+        </p>
+        <span style={{ fontSize: 9, color: "var(--color-muted)" }}>{collapsed ? "▸" : "▾"}</span>
+      </button>
 
-      {weekDays.length > 0 && (
-        <div className="flex items-center gap-3 mt-3">
-          {weekDays.map((dateStr, i) => {
-            const entry = daily.find((d) => d.date === dateStr)
-            const dayLabels = ["Pn", "Wt", "Śr", "Cz", "Pt"]
-            const color = entry === undefined ? "var(--color-border)" : entry.achieved ? "#2D6A4F" : "#D96060"
-            return (
-              <div key={dateStr} className="flex items-center gap-1">
-                <span style={{ fontSize: 9, color: "var(--color-muted)" }}>{dayLabels[i]}</span>
-                <span style={{
-                  display: "block", width: 9, height: 9, borderRadius: "50%",
-                  background: color, flexShrink: 0,
-                }} />
-              </div>
-            )
-          })}
-        </div>
+      {!collapsed && (
+        <>
+          <div className="flex items-start justify-between gap-4 mt-1">
+            <p style={{ fontSize: 12, color: "var(--color-text)", flex: 1 }}>
+              {goal.goalText}
+              <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-tiny)", marginLeft: 8 }}>
+                ({goal.probabilityAssigned}%)
+              </span>
+            </p>
+            {score !== null && (
+              <span style={{
+                fontSize: "var(--font-size-tiny)", padding: "3px 10px", borderRadius: 4,
+                background: accentColor, color: "#fff", fontWeight: 700, flexShrink: 0, alignSelf: "center",
+              }}>
+                {Math.round(score * 100)}%
+              </span>
+            )}
+          </div>
+
+          {weekDays.length > 0 && (
+            <div className="flex items-center gap-3 mt-3">
+              {weekDays.map((dateStr, i) => {
+                const entry = daily.find((d) => d.date === dateStr)
+                const dayLabels = ["Pn", "Wt", "Śr", "Cz", "Pt"]
+                const color = entry === undefined ? "var(--color-border)" : entry.achieved ? "#2D6A4F" : "#D96060"
+                return (
+                  <div key={dateStr} className="flex items-center gap-1">
+                    <span style={{ fontSize: 9, color: "var(--color-muted)" }}>{dayLabels[i]}</span>
+                    <span style={{
+                      display: "block", width: 9, height: 9, borderRadius: "50%",
+                      background: color, flexShrink: 0,
+                    }} />
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

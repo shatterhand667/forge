@@ -1,27 +1,34 @@
+"use client"
+
+import { useState } from "react"
+
 interface LessonBannerProps {
   lesson: string
 }
 
 export function LessonBanner({ lesson }: LessonBannerProps) {
+  const [collapsed, setCollapsed] = useState(false)
+
   return (
     <div
-      className="rounded px-4 py-3 flex gap-3 items-start"
-      style={{
-        background: "var(--color-light)",
-        borderLeft: "4px solid var(--color-gold)",
-      }}
+      className="rounded px-4 py-3"
+      style={{ background: "var(--color-light)", borderLeft: "4px solid var(--color-gold)" }}
     >
-      <div>
-        <p
-          className="font-medium mb-1"
-          style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}
-        >
-          Pamiętaj o lekcji z wczoraj:
+      <button
+        onClick={() => setCollapsed(c => !c)}
+        className="flex items-center justify-between w-full"
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left" }}
+      >
+        <p className="font-medium" style={{ fontSize: 9, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+          Lekcja z wczoraj
         </p>
-        <p style={{ fontSize: "var(--font-size-body)", color: "var(--color-text)" }}>
+        <span style={{ fontSize: 9, color: "var(--color-muted)" }}>{collapsed ? "▸" : "▾"}</span>
+      </button>
+      {!collapsed && (
+        <p style={{ fontSize: 12, color: "var(--color-text)", marginTop: 4 }}>
           {lesson}
         </p>
-      </div>
+      )}
     </div>
   )
 }
