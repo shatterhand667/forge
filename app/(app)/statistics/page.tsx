@@ -11,9 +11,14 @@ function getDateRange(
   from: string | undefined,
   to: string | undefined
 ): { start: Date | null; end: Date | null } {
-  if (from && to) return { start: new Date(from), end: new Date(to) }
+  if (from && to) {
+    const end = new Date(to)
+    end.setUTCDate(end.getUTCDate() + 1)
+    return { start: new Date(from), end }
+  }
   const now = new Date()
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+  // Use UTC to avoid local-timezone shift when Prisma maps @db.Date to DATE
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
   switch (range) {
     case "2w": return { start: new Date(now.getTime() - 14 * 86400000), end }
     case "3m": return { start: new Date(now.getTime() - 90 * 86400000), end }
