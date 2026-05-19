@@ -231,6 +231,8 @@
       "fields": [
         { "id": "process_score", "label_pl": "Ocena procesu (1–10):", "label_en": "Process score (1–10):", "type": "number", "min": 1, "max": 10 },
         { "id": "pl", "label_pl": "P&L (pkt / %):", "label_en": "P&L (pts / %):", "type": "text" },
+        { "id": "max_daily_drawdown", "label_pl": "Największy dzienny drawdown:", "label_en": "Biggest daily drawdown:", "type": "text" },
+        { "id": "max_risk_per_trade", "label_pl": "Największe ryzyko na trade:", "label_en": "Biggest risk per trade:", "type": "text" },
         { "id": "overall_score", "label_pl": "Ogólna ocena:", "label_en": "Overall score:", "type": "gold_circles", "scale": [1, 5] },
         {
           "id": "tomorrow_remember",
