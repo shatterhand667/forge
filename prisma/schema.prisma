@@ -55,6 +55,8 @@ model DailyCard {
   deliberatePractice String?
   processScore       Int?
   pl                 String?
+  maxDailyDrawdown   String?
+  maxRiskPerTrade    String?
   overallScore       Int?
   proudOf            String?
   ashamedOf          String?
