@@ -27,7 +27,7 @@ export function Step13Evaluation({ card, date, step, weeklyGoal }: Props) {
   const [processScore, setProcessScore] = useState<number | null>(card.processScore)
   const [pl, setPl] = useState(card.pl ?? "")
   const [maxDailyDrawdown, setMaxDailyDrawdown] = useState(card.maxDailyDrawdown ?? "")
-  const [maxRiskPerTrade, setMaxRiskPerTrade] = useState(card.maxRiskPerTrade ?? "")
+  const [dailyMaxRisk, setDailyMaxRisk] = useState(card.dailyMaxRisk ?? "")
   const [overallScore, setOverallScore] = useState<number | null>(card.overallScore)
   const [saving, setSaving] = useState(false)
 
@@ -50,7 +50,7 @@ export function Step13Evaluation({ card, date, step, weeklyGoal }: Props) {
       processScore: processScore ?? undefined,
       pl,
       maxDailyDrawdown,
-      maxRiskPerTrade,
+      dailyMaxRisk,
       overallScore: overallScore ?? undefined,
     })
     router.push(`/cards/${date}/evening/14`)
@@ -132,7 +132,7 @@ export function Step13Evaluation({ card, date, step, weeklyGoal }: Props) {
 
           <TextInput label="P&L:" value={pl} onChange={setPl} placeholder="np. +1.5R lub -250 PLN" />
           <TextInput label="Największy drawdown:" value={maxDailyDrawdown} onChange={setMaxDailyDrawdown} placeholder="np. –2.5R lub –1.8%" />
-          <TextInput label="Max ryzyko na trade:" value={maxRiskPerTrade} onChange={setMaxRiskPerTrade} placeholder="np. 1.0R lub 0.5%" />
+          <TextInput label="Max ryzyko na trade:" value={dailyMaxRisk} onChange={setDailyMaxRisk} placeholder="np. 1.0R lub 0.5%" />
           <GoldCircles label="Ogólna ocena (1–10):" value={overallScore} onChange={setOverallScore} options={[1,2,3,4,5,6,7,8,9,10]} />
         </div>
       </div>
