@@ -1,0 +1,2 @@
+ALTER TABLE "DailyCard" ADD COLUMN IF NOT EXISTS "maxDailyDrawdown" TEXT;
+ALTER TABLE "DailyCard" ADD COLUMN IF NOT EXISTS "maxRiskPerTrade" TEXT;
