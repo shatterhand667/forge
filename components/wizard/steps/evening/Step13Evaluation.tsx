@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WizardLayout } from "@/components/wizard/WizardLayout"
-import { SectionHeader, GoldCircles, TextInput } from "@/components/forge"
+import { SectionHeader } from "@/components/forge"
 import { updateDailyCard } from "@/actions/cards"
 import { upsertDailyOutcome } from "@/actions/calibration"
 import type { DailyCard } from "@prisma/client"
@@ -38,6 +38,18 @@ export function Step13Evaluation({ card, date, step, weeklyGoal }: Props) {
       ).find((d) => d.date === date)?.achieved ?? null
     : null
   const [dailyAchieved, setDailyAchieved] = useState<boolean | null>(existingDailyOutcome)
+
+  const inputStyle: React.CSSProperties = {
+    border: 0,
+    borderBottom: "0.5px solid var(--color-border)",
+    background: "transparent",
+    outline: "none",
+    padding: "2px 4px",
+    fontFamily: "var(--font-family)",
+    fontSize: "var(--font-size-label)",
+    color: "var(--color-text)",
+    width: "100%",
+  }
 
   async function handleDailyOutcome(achieved: boolean) {
     setDailyAchieved(achieved)
@@ -102,38 +114,98 @@ export function Step13Evaluation({ card, date, step, weeklyGoal }: Props) {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 py-2">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
+            columnGap: 12,
+            rowGap: 8,
+            alignItems: "center",
+            padding: "8px 0",
+          }}
+        >
           {/* Process score 1-10 */}
-          <div className="flex items-center gap-2">
-            <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", minWidth: 140 }}>
-              Process score (1–10):
-            </span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setProcessScore(n)}
-                  className="rounded-full flex items-center justify-center"
-                  style={{
-                    width: 20,
-                    height: 20,
-                    border: `0.8px solid var(--color-accent)`,
-                    background: processScore === n ? "var(--color-accent)" : "var(--color-white)",
-                    color: processScore === n ? "var(--color-white)" : "var(--color-muted)",
-                    fontSize: 8,
-                  }}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
+          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>
+            Process score (1–10):
+          </span>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setProcessScore(n)}
+                className="rounded-full flex items-center justify-center"
+                style={{
+                  width: 20,
+                  height: 20,
+                  border: `0.8px solid var(--color-accent)`,
+                  background: processScore === n ? "var(--color-accent)" : "var(--color-white)",
+                  color: processScore === n ? "var(--color-white)" : "var(--color-muted)",
+                  fontSize: 8,
+                }}
+              >
+                {n}
+              </button>
+            ))}
           </div>
 
-          <TextInput label="P&L:" value={pl} onChange={setPl} placeholder="np. +1.5R lub -250 PLN" />
-          <TextInput label="Największy drawdown:" value={maxDailyDrawdown} onChange={setMaxDailyDrawdown} placeholder="np. –2.5R lub –1.8%" />
-          <TextInput label="Max ryzyko na trade:" value={dailyMaxRisk} onChange={setDailyMaxRisk} placeholder="np. 1.0R lub 0.5%" />
-          <GoldCircles label="Ogólna ocena (1–10):" value={overallScore} onChange={setOverallScore} options={[1,2,3,4,5,6,7,8,9,10]} />
+          {/* P&L */}
+          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>P&L:</span>
+          <input
+            type="text"
+            value={pl}
+            onChange={(e) => setPl(e.target.value)}
+            placeholder="np. +1.5R lub -250 PLN"
+            style={inputStyle}
+          />
+
+          {/* Drawdown */}
+          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>Największy drawdown:</span>
+          <input
+            type="text"
+            value={maxDailyDrawdown}
+            onChange={(e) => setMaxDailyDrawdown(e.target.value)}
+            placeholder="np. –2.5R lub –1.8%"
+            style={inputStyle}
+          />
+
+          {/* Max ryzyko */}
+          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>Max ryzyko na trade:</span>
+          <input
+            type="text"
+            value={dailyMaxRisk}
+            onChange={(e) => setDailyMaxRisk(e.target.value)}
+            placeholder="np. 1.0R lub 0.5%"
+            style={inputStyle}
+          />
+
+          {/* Ogólna ocena */}
+          <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>Ogólna ocena (1–10):</span>
+          <div className="flex gap-2" role="radiogroup" aria-label="Ogólna ocena">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+              <label key={n} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="overall-score"
+                  value={n}
+                  checked={overallScore === n}
+                  onChange={() => setOverallScore(n)}
+                  aria-label={String(n)}
+                  className="sr-only"
+                />
+                <span
+                  className="block rounded-full"
+                  style={{
+                    width: 22,
+                    height: 22,
+                    border: `1.5px solid var(--color-gold)`,
+                    background: overallScore !== null && n <= overallScore ? "var(--color-gold)" : "transparent",
+                    transition: "var(--transition-fast)",
+                  }}
+                />
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 
