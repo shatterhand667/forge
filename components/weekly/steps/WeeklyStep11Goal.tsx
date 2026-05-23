@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WeeklyLayout } from "@/components/weekly/WeeklyLayout"
 import { SectionHeader } from "@/components/forge"
+import { AutoTextarea } from "@/components/forge/TableInput"
 import { updateWeeklyReview } from "@/actions/weekly"
 import { upsertCalibrationGoal } from "@/actions/calibration"
 import type { WeeklyReview } from "@prisma/client"
@@ -102,19 +103,20 @@ export function WeeklyStep11Goal({ review, weekStart, step, prevWeekGoal }: Prop
         {fields.map(({ label, value, set }) => (
           <div key={label}>
             <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>{label}</span>
-            <input
+            <AutoTextarea
               value={value}
-              onChange={e => set(e.target.value)}
+              onChange={set}
               style={{
                 display: "block",
                 width: "100%",
                 border: "none",
                 borderBottom: "1px solid var(--color-border)",
                 background: "transparent",
-                fontSize: "var(--font-size-body)",
+                fontSize: "var(--font-size-tiny)",
                 padding: "4px 0",
                 marginTop: 4,
                 color: "var(--color-text)",
+                resize: "none",
               }}
             />
           </div>
@@ -124,19 +126,20 @@ export function WeeklyStep11Goal({ review, weekStart, step, prevWeekGoal }: Prop
           <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>
             Cel procesowy na przyszły tydzień (mierzalny, sprawdzalny za 7 dni):
           </span>
-          <input
+          <AutoTextarea
             value={goal}
-            onChange={e => setGoal(e.target.value)}
+            onChange={setGoal}
             style={{
               display: "block",
               width: "100%",
               border: "none",
               borderBottom: "1px solid var(--color-border)",
               background: "transparent",
-              fontSize: "var(--font-size-body)",
+              fontSize: "var(--font-size-tiny)",
               padding: "4px 0",
               marginTop: 4,
               color: "var(--color-text)",
+              resize: "none",
             }}
           />
           <div className="flex gap-2 items-center mt-2">
