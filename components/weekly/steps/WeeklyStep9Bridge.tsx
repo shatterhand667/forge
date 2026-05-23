@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WeeklyLayout } from "@/components/weekly/WeeklyLayout"
 import { SectionHeader, TextArea } from "@/components/forge"
+import { AutoTextarea } from "@/components/forge/TableInput"
 import { updateWeeklyReview } from "@/actions/weekly"
 import type { WeeklyReview } from "@prisma/client"
 import type { WeeklyStats } from "@/lib/weekly-stats"
@@ -90,17 +91,18 @@ export function WeeklyStep9Bridge({ review, weekStart, step }: Props) {
                 >
                   {i + 1}.
                 </span>
-                <input
+                <AutoTextarea
                   value={item}
-                  onChange={e => setItems(prev => prev.map((v, idx) => idx === i ? e.target.value : v))}
+                  onChange={v => setItems(prev => prev.map((x, idx) => idx === i ? v : x))}
                   style={{
                     flex: 1,
                     border: "none",
                     borderBottom: "1px solid var(--color-border)",
                     background: "transparent",
-                    fontSize: "var(--font-size-body)",
+                    fontSize: "var(--font-size-tiny)",
                     padding: "4px 0",
                     color: "var(--color-text)",
+                    resize: "none",
                   }}
                 />
               </div>

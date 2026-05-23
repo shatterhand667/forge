@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WeeklyLayout } from "@/components/weekly/WeeklyLayout"
 import { SectionHeader, TextArea } from "@/components/forge"
+import { AutoTextarea } from "@/components/forge/TableInput"
 import { updateWeeklyReview } from "@/actions/weekly"
 import type { WeeklyReview } from "@prisma/client"
 import type { WeeklyStats } from "@/lib/weekly-stats"
@@ -72,17 +73,18 @@ export function WeeklyStep5Lessons({ review, weekStart, step }: Props) {
                 >
                   {n}.
                 </span>
-                <input
+                <AutoTextarea
                   value={val}
-                  onChange={e => set(e.target.value)}
+                  onChange={set}
                   style={{
                     flex: 1,
                     border: "none",
                     borderBottom: "1px solid var(--color-border)",
                     background: "transparent",
-                    fontSize: "var(--font-size-body)",
+                    fontSize: "var(--font-size-tiny)",
                     padding: "4px 0",
                     color: "var(--color-text)",
+                    resize: "none",
                   }}
                 />
               </div>
