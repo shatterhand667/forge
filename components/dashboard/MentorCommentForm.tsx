@@ -46,7 +46,7 @@ export function MentorCommentForm({ cardId, initialComment }: Props) {
         className="w-full rounded px-3 py-2 resize-none"
         style={{
           border: `1px solid ${error ? "var(--color-gold)" : "var(--color-border)"}`,
-          fontSize: "var(--font-size-body)",
+          fontSize: "var(--font-size-tiny)",
           color: "var(--color-text)",
           background: "var(--color-white)",
         }}
