@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { getOrCreateWeeklyReview, getWeeklyStats, getEdgeTrend, getWeekLessons } from "@/actions/weekly"
+import { getOrCreateWeeklyReview, getWeeklyStats, getEdgeTrend, getWeekLessons, getPrevWeekPracticePlan } from "@/actions/weekly"
 import { getPrevWeekGoal } from "@/actions/calibration"
 import { WeeklyStep1Stats } from "@/components/weekly/steps/WeeklyStep1Stats"
 import { WeeklyStep2Tiers } from "@/components/weekly/steps/WeeklyStep2Tiers"
@@ -30,12 +30,13 @@ export default async function WeeklyStepPage({
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const [review, stats, edgeTrend, weekLessons, prevWeekGoal] = await Promise.all([
+  const [review, stats, edgeTrend, weekLessons, prevWeekGoal, prevPracticePlan] = await Promise.all([
     getOrCreateWeeklyReview(weekStart),
     getWeeklyStats(weekStart),
     step === 3 ? getEdgeTrend(weekStart) : Promise.resolve([]),
     step === 1 ? getWeekLessons(weekStart) : Promise.resolve([]),
     step === 11 ? getPrevWeekGoal(weekStart) : Promise.resolve(null),
+    step === 10 ? getPrevWeekPracticePlan(weekStart) : Promise.resolve(null),
   ])
 
   const props = { review, stats, weekStart, step }
@@ -49,6 +50,6 @@ export default async function WeeklyStepPage({
   if (step === 7) return <WeeklyStep7Mental {...props} />
   if (step === 8) return <WeeklyStep8Identity {...props} />
   if (step === 9) return <WeeklyStep9Bridge {...props} />
-  if (step === 10) return <WeeklyStep10Practice {...props} />
+  if (step === 10) return <WeeklyStep10Practice {...props} prevPracticePlan={prevPracticePlan} />
   return <WeeklyStep11Goal {...props} prevWeekGoal={prevWeekGoal} />
 }

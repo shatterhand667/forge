@@ -59,7 +59,7 @@ export async function updateWeeklyReview(
     drainedMe: string
     bridgeStrategicTopic: string
     bridgePreMortemItems: Prisma.InputJsonValue
-    lastWeekPracticeCount: number
+    lastWeekPracticeScores: Prisma.InputJsonValue
     lastWeekPracticeWhatWentWrong: string
     practicePlan: Prisma.InputJsonValue
     practiceMeta: string
@@ -129,6 +129,16 @@ export async function getEdgeTrend(weekStartStr: string): Promise<EdgeWeekData[]
   )
 
   return results
+}
+
+export async function getPrevWeekPracticePlan(weekStartStr: string) {
+  const userId = await requireUser()
+  const weekStart = new Date(weekStartStr)
+  return prisma.weeklyReview.findFirst({
+    where: { userId, weekStart: { lt: weekStart } },
+    orderBy: { weekStart: "desc" },
+    select: { practicePlan: true, weekStart: true },
+  })
 }
 
 export async function getWeekLessons(weekStartStr: string) {

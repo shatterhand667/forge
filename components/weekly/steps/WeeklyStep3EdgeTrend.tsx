@@ -16,13 +16,13 @@ interface Props {
 function pct(n: number) { return n === 0 ? "—" : `${(n * 100).toFixed(0)}%` }
 function fmt(n: number) { return n === 0 ? "—" : n.toFixed(2) }
 
-function trendArrow(data: EdgeWeekData[]): string {
+function trendArrow(data: EdgeWeekData[], getRaw: (w: EdgeWeekData) => number): string {
   if (data.length < 2) return "→"
-  const last = data[data.length - 1]
-  const prev = data[data.length - 2]
-  const score = (last.winRate - prev.winRate) + (last.avgR - prev.avgR)
-  if (score > 0.05) return "↗"
-  if (score < -0.05) return "↘"
+  const last = getRaw(data[data.length - 1])
+  const prev = getRaw(data[data.length - 2])
+  const delta = last - prev
+  if (delta > 0.05) return "↗"
+  if (delta < -0.05) return "↘"
   return "→"
 }
 
@@ -36,9 +36,9 @@ export function WeeklyStep3EdgeTrend({ review, stats, weekStart, step, edgeTrend
   const allWeeks = [...edgeTrend, thisWeek]
 
   const rows = [
-    { label: "Win rate",       getValue: (w: EdgeWeekData) => pct(w.winRate) },
-    { label: "Avg R",          getValue: (w: EdgeWeekData) => fmt(w.avgR) },
-    { label: "Profit factor",  getValue: (w: EdgeWeekData) => fmt(w.profitFactor) },
+    { label: "Win rate",      getDisplay: (w: EdgeWeekData) => pct(w.winRate),      getRaw: (w: EdgeWeekData) => w.winRate },
+    { label: "Avg R",         getDisplay: (w: EdgeWeekData) => fmt(w.avgR),         getRaw: (w: EdgeWeekData) => w.avgR },
+    { label: "Profit factor", getDisplay: (w: EdgeWeekData) => fmt(w.profitFactor), getRaw: (w: EdgeWeekData) => w.profitFactor },
   ]
 
   return (
@@ -76,14 +76,14 @@ export function WeeklyStep3EdgeTrend({ review, stats, weekStart, step, edgeTrend
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ label, getValue }) => (
+              {rows.map(({ label, getDisplay, getRaw }) => (
                 <tr key={label} style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "6px 8px", fontWeight: 600 }}>{label}</td>
                   {allWeeks.map((w, i) => (
-                    <td key={i} style={{ padding: "6px 8px", textAlign: "center" }}>{getValue(w)}</td>
+                    <td key={i} style={{ padding: "6px 8px", textAlign: "center" }}>{getDisplay(w)}</td>
                   ))}
                   <td style={{ padding: "6px 8px", textAlign: "center", fontSize: 16 }}>
-                    {trendArrow(edgeTrend)}
+                    {trendArrow(allWeeks, getRaw)}
                   </td>
                 </tr>
               ))}

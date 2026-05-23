@@ -188,7 +188,7 @@ model WeeklyReview {
   bridgePreMortemItems  Json?
 
   // Section 15 — deliberate practice
-  lastWeekPracticeCount         Int?
+  lastWeekPracticeScores        Json?
   lastWeekPracticeWhatWentWrong String?
   practicePlan                  Json?
   practiceMeta                  String?

@@ -9,7 +9,7 @@ import type { DailyCard, EmotionEntry } from "@prisma/client"
 
 const EMOTION_COLUMNS = [
   { id: "time",           label: "Czas",               width: "7%" },
-  { id: "emotion",        label: "Emocja",             width: "15%",
+  { id: "emotion",        label: "Emocja",             width: "15%", type: "textarea" as const,
     tooltip: "Nazwa stanu: strach, frustracja, euforia, niecierpliwość, spokój, pewność, znudzenie…" },
   { id: "triggerContext", label: "Trigger / kontekst", width: "26%", type: "textarea" as const,
     tooltip: "Co wywołało tę emocję — sytuacja rynkowa, zdarzenie, myśl. Np. przebicie ważnego poziomu, strata na poprzednim trade, nudny rynek." },
