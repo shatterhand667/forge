@@ -91,38 +91,32 @@ export function Step2PersonalContext({ card, date, step }: Props) {
           {bodyZone && (
             <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: 6 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{
-                  color: "var(--color-muted)",
-                  fontSize: "var(--font-size-label)",
-                  minWidth: "170px",
-                  maxWidth: "170px",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}>
-                  Body:
-                </span>
-                <ReadOnlyScoreDots zone={bodyZone.zone} color={bodyZone.color} />
-                <div style={{ position: "relative", display: "inline-flex" }} className="group">
-                  <span style={{ fontSize: 10, color: "var(--color-muted)", cursor: "default", userSelect: "none" }}>ⓘ</span>
-                  <div className="group-hover:block hidden" style={{
-                    position: "absolute",
-                    bottom: "calc(100% + 6px)",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: "var(--color-dark)",
-                    color: "var(--color-white)",
-                    fontSize: "var(--font-size-tiny)",
-                    padding: "6px 10px",
-                    borderRadius: 4,
-                    width: 220,
-                    zIndex: 10,
-                    lineHeight: 1.5,
-                    pointerEvents: "none",
-                  }}>
-                    Suma ocen Sen + Energia (maks. 20). Wskaźnik gotowości biologicznej. ≤7 = układ nerwowy nie uniesie stresu dużych pozycji. 8–14 = ogranicz ryzyko. 15–20 = pełna gotowość.
+                <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: "170px", maxWidth: "170px" }}>
+                  <span style={{ color: "var(--color-muted)", fontSize: "var(--font-size-label)", whiteSpace: "nowrap" }}>
+                    Body Aggregation:
+                  </span>
+                  <div style={{ position: "relative", display: "inline-flex" }} className="group">
+                    <span style={{ fontSize: 10, color: "var(--color-muted)", cursor: "default", userSelect: "none" }}>ⓘ</span>
+                    <div className="group-hover:block hidden" style={{
+                      position: "absolute",
+                      bottom: "calc(100% + 6px)",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: "var(--color-dark)",
+                      color: "var(--color-white)",
+                      fontSize: "var(--font-size-tiny)",
+                      padding: "6px 10px",
+                      borderRadius: 4,
+                      width: 220,
+                      zIndex: 10,
+                      lineHeight: 1.5,
+                      pointerEvents: "none",
+                    }}>
+                      Suma ocen Sen + Energia (maks. 20). Wskaźnik gotowości biologicznej. ≤7 = układ nerwowy nie uniesie stresu dużych pozycji. 8–14 = ogranicz ryzyko. 15–20 = pełna gotowość.
+                    </div>
                   </div>
                 </div>
+                <ReadOnlyScoreDots zone={bodyZone.zone} color={bodyZone.color} />
               </div>
               <span style={{
                 fontSize: "var(--font-size-tiny)",
