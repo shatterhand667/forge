@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WeeklyLayout } from "@/components/weekly/WeeklyLayout"
 import { SectionHeader, BridgeIndicator } from "@/components/forge"
+import { AutoTextarea } from "@/components/forge/TableInput"
 import { updateWeeklyReview } from "@/actions/weekly"
 import type { WeeklyReview } from "@prisma/client"
 import type { WeeklyStats } from "@/lib/weekly-stats"
@@ -151,19 +152,20 @@ export function WeeklyStep10Practice({ review, weekStart, step, prevPracticePlan
               <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>
                 Co poszło nie tak?
               </span>
-              <input
+              <AutoTextarea
                 value={whatWentWrong}
-                onChange={e => setWhatWentWrong(e.target.value)}
+                onChange={v => setWhatWentWrong(v)}
                 style={{
                   display: "block",
                   width: "100%",
                   border: "none",
                   borderBottom: "1px solid var(--color-border)",
                   background: "transparent",
-                  fontSize: "var(--font-size-body)",
+                  fontSize: "var(--font-size-tiny)",
                   padding: "4px 0",
                   marginTop: 4,
                   color: "var(--color-text)",
+                  resize: "none",
                 }}
               />
             </div>
@@ -235,7 +237,7 @@ export function WeeklyStep10Practice({ review, weekStart, step, prevPracticePlan
               border: "none",
               borderBottom: "1px solid var(--color-border)",
               background: "transparent",
-              fontSize: "var(--font-size-body)",
+              fontSize: "var(--font-size-tiny)",
               padding: "4px 0",
               marginTop: 4,
               color: "var(--color-text)",
