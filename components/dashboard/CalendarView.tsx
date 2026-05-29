@@ -48,6 +48,21 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
   const firstDayRaw = new Date(year, month - 1, 1).getDay()
   const firstDay = firstDayRaw === 0 ? 6 : firstDayRaw - 1
 
+  const weeklyStats = new Map<string, { processScores: number[]; pnls: number[] }>()
+  allCards.forEach((c) => {
+    const ds = new Date(c.date).toISOString().split("T")[0]
+    const [cy, cm, cd] = ds.split("-").map(Number)
+    const dow = new Date(Date.UTC(cy, cm - 1, cd)).getUTCDay()
+    if (dow === 0 || dow === 6) return
+    const daysFromMon = dow === 1 ? 0 : dow - 1
+    const mon = new Date(Date.UTC(cy, cm - 1, cd - daysFromMon))
+    const monStr = mon.toISOString().split("T")[0]
+    if (!weeklyStats.has(monStr)) weeklyStats.set(monStr, { processScores: [], pnls: [] })
+    const stats = weeklyStats.get(monStr)!
+    if (c.processScore != null) stats.processScores.push(c.processScore)
+    if (c.pnl != null) stats.pnls.push(c.pnl)
+  })
+
   const cardMap = new Map(
     allCards
       .filter((c) => {
@@ -156,8 +171,20 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
             ? "var(--color-white)"
             : "var(--color-text)"
 
-          const processScore = !isWeekend ? card?.processScore ?? null : null
-          const pnl = !isWeekend ? card?.pnl ?? null : null
+          let weekAvgProcess: number | null = null
+          let weekTotalPnl: number | null = null
+          if (isWeekend && weekStart) {
+            const stats = weeklyStats.get(weekStart)
+            if (dow === 6 && stats && stats.processScores.length > 0) {
+              const avg = stats.processScores.reduce((a, b) => a + b, 0) / stats.processScores.length
+              weekAvgProcess = Math.round(avg * 10) / 10
+            }
+            if (dow === 0 && stats && stats.pnls.length > 0) {
+              weekTotalPnl = stats.pnls.reduce((a, b) => a + b, 0)
+            }
+          }
+          const processScore = !isWeekend ? card?.processScore ?? null : weekAvgProcess
+          const pnl = !isWeekend ? card?.pnl ?? null : weekTotalPnl
 
           const processColor = processScore != null
             ? processScore >= 6 ? "#4ade80" : "#fca5a5"
