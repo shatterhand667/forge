@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { WizardLayout } from "@/components/wizard/WizardLayout"
-import { SectionHeader, TextArea, TextInput } from "@/components/forge"
+import { SectionHeader, TextArea } from "@/components/forge"
 import { updateDailyCard } from "@/actions/cards"
 import type { DailyCard } from "@prisma/client"
 
@@ -41,10 +41,11 @@ export function Step15Tomorrow({ card, date, step }: Props) {
         <div>
           <SectionHeader number="14" title="LEKCJA NA JUTRO" />
           <div className="flex flex-col gap-4 mt-4">
-            <TextInput
+            <TextArea
               label="Dziś w jednym zdaniu:"
               value={todayInOneSentence}
               onChange={setTodayInOneSentence}
+              rows={2}
               placeholder="Jak opisałbyś ten dzień w jednym zdaniu?"
             />
             <TextArea
