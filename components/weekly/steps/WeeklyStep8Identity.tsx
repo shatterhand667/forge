@@ -49,7 +49,7 @@ export function WeeklyStep8Identity({ review, weekStart, step }: Props) {
               rows={3}
             />
             <TextArea
-              label="Sytuacje, w których NIE zachowałem się jak ten trader — co to mówi o luce?"
+              label="Sytuacje, w których NIE zachowałem się jak ten trader:"
               value={wasNot}
               onChange={setWasNot}
               rows={3}

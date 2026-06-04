@@ -220,10 +220,10 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
                   lineHeight: 1,
                 }}>
                   {processScore != null && (
-                    <span style={{ color: processColor }}>{processScore}/10</span>
+                    <span style={{ color: processColor, fontWeight: "bold" }}>{processScore}/10</span>
                   )}
                   {pnl != null && (
-                    <span style={{ color: pnlColor }}>{pnl >= 0 ? "+" : ""}€{pnl}</span>
+                    <span style={{ color: pnlColor, fontWeight: "bold" }}>{pnl >= 0 ? "+" : ""}€{pnl}</span>
                   )}
                 </span>
               )}

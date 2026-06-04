@@ -254,7 +254,7 @@
         },
         {
           "id": "identity_was_not",
-          "label_pl": "Sytuacje, w których NIE zachowałem się jak ten trader — co to mówi o luce?",
+          "label_pl": "Sytuacje, w których NIE zachowałem się jak ten trader:",
           "type": "textarea",
           "lines": 3
         }
