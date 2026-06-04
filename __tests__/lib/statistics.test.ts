@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { computeSetupStats, computeGlobalStats } from "@/lib/statistics"
-import type { TradeForStats } from "@/lib/statistics"
+import { computeSetupStats, computeGlobalStats, computeTriggerStats } from "@/lib/statistics"
+import type { TradeForStats, TradeForTriggerStats } from "@/lib/statistics"
 
 const t = (overrides: Partial<TradeForStats> = {}): TradeForStats => ({
   playbookSetupId: "s1",
@@ -97,5 +97,69 @@ describe("computeGlobalStats", () => {
     expect(result.avgR).toBeNull()
     expect(result.totalPnL).toBe(0)
     expect(result.profitFactor).toBe("—")
+  })
+})
+
+const trig = (overrides: Partial<TradeForTriggerStats> = {}): TradeForTriggerStats => ({
+  playbookSetupId: "s1",
+  playbookSetup: { name: "Breakout" },
+  playbookTriggerId: "tr1",
+  playbookTrigger: { name: "Candle Close Above HH" },
+  direction: "long",
+  tier: "A",
+  rActual: 1.0,
+  profitRaw: 100,
+  ...overrides,
+})
+
+describe("computeTriggerStats", () => {
+  it("groups trades by trigger and computes basic stats", () => {
+    const trades = [
+      trig({ rActual: 1.0, profitRaw: 100 }),
+      trig({ rActual: -0.5, profitRaw: -50 }),
+      trig({
+        playbookTriggerId: "tr2",
+        playbookTrigger: { name: "Volume Spike" },
+        rActual: 2.0,
+        profitRaw: 200,
+      }),
+    ]
+    const result = computeTriggerStats(trades)
+    expect(result).toHaveLength(2)
+    expect(result[0].triggerName).toBe("Candle Close Above HH")
+    expect(result[0].trades).toBe(2)
+    expect(result[0].winRate).toBe(0.5)
+    expect(result[0].avgR).toBe(0.25)
+    expect(result[0].totalPnL).toBe(50)
+  })
+
+  it("places 'Bez triggera' last", () => {
+    const trades = [
+      trig({ playbookTriggerId: null, playbookTrigger: null }),
+      trig({ playbookTriggerId: null, playbookTrigger: null }),
+      trig({ playbookTriggerId: "tr1" }),
+    ]
+    const result = computeTriggerStats(trades)
+    expect(result[result.length - 1].triggerId).toBeNull()
+    expect(result[result.length - 1].triggerName).toBe("Bez triggera")
+  })
+
+  it("counts long/short and tiers correctly", () => {
+    const trades = [
+      trig({ direction: "long", tier: "A" }),
+      trig({ direction: "short", tier: "B" }),
+    ]
+    const result = computeTriggerStats(trades)
+    expect(result[0].long).toBe(1)
+    expect(result[0].short).toBe(1)
+    expect(result[0].tierA).toBe(1)
+    expect(result[0].tierB).toBe(1)
+  })
+
+  it("returns winRate null when no rActual values", () => {
+    const trades = [trig({ rActual: null })]
+    const result = computeTriggerStats(trades)
+    expect(result[0].winRate).toBeNull()
+    expect(result[0].avgR).toBeNull()
   })
 })

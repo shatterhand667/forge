@@ -30,6 +30,26 @@ export type GlobalStats = {
   profitFactor: number | string
 }
 
+export type TradeForTriggerStats = TradeForStats & {
+  playbookTriggerId: string | null
+  playbookTrigger: { name: string } | null
+}
+
+export type TriggerStats = {
+  triggerId: string | null
+  triggerName: string
+  trades: number
+  winRate: number | null
+  avgR: number | null
+  totalPnL: number
+  profitFactor: number | string
+  long: number
+  short: number
+  tierA: number
+  tierB: number
+  tierC: number
+}
+
 function pfactor(trades: TradeForStats[]): number | string {
   const withPnL = trades.filter(t => t.profitRaw !== null)
   if (withPnL.length === 0) return "—"
@@ -78,6 +98,52 @@ export function computeSetupStats(trades: TradeForStats[]): SetupStats[] {
   return results.sort((a, b) => {
     if (a.setupId === null) return 1
     if (b.setupId === null) return -1
+    return b.trades - a.trades
+  })
+}
+
+export function computeTriggerStats(trades: TradeForTriggerStats[]): TriggerStats[] {
+  const groups = new Map<string | null, TradeForTriggerStats[]>()
+  for (const trade of trades) {
+    const key = trade.playbookTriggerId
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(trade)
+  }
+
+  const results: TriggerStats[] = []
+  for (const [triggerId, g] of groups) {
+    const withR = g.filter((t) => t.rActual !== null)
+    const wins = withR.filter((t) => t.rActual! > 0)
+    const winRate = withR.length > 0 ? wins.length / withR.length : null
+    const avgR =
+      withR.length > 0
+        ? Math.round((withR.reduce((s, t) => s + t.rActual!, 0) / withR.length) * 100) / 100
+        : null
+    const totalPnL =
+      Math.round(
+        g.filter((t) => t.profitRaw !== null).reduce((s, t) => s + t.profitRaw!, 0) * 100
+      ) / 100
+
+    results.push({
+      triggerId,
+      triggerName:
+        triggerId === null ? "Bez triggera" : (g[0].playbookTrigger?.name ?? "Bez triggera"),
+      trades: g.length,
+      winRate,
+      avgR,
+      totalPnL,
+      profitFactor: pfactor(g),
+      long: g.filter((t) => t.direction === "long").length,
+      short: g.filter((t) => t.direction === "short").length,
+      tierA: g.filter((t) => t.tier === "A").length,
+      tierB: g.filter((t) => t.tier === "B").length,
+      tierC: g.filter((t) => t.tier === "C").length,
+    })
+  }
+
+  return results.sort((a, b) => {
+    if (a.triggerId === null) return 1
+    if (b.triggerId === null) return -1
     return b.trades - a.trades
   })
 }
