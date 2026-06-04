@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db"
 import Link from "next/link"
 import { Suspense } from "react"
 import { StatisticsFilter } from "@/components/statistics/StatisticsFilter"
+import { SortableStatsTable } from "@/components/statistics/SortableStatsTable"
+import type { StatsRow } from "@/components/statistics/SortableStatsTable"
 import { computeTriggerStats, computeGlobalStats } from "@/lib/statistics"
 import type { TradeForTriggerStats } from "@/lib/statistics"
 
@@ -79,26 +81,6 @@ export default async function SetupDrilldownPage({
 
   const triggerStats = computeTriggerStats(trades)
   const global = computeGlobalStats(trades)
-
-  const thBase: React.CSSProperties = {
-    color: "#fff",
-    padding: "5px 8px",
-    fontSize: "var(--font-size-tiny)",
-    fontWeight: 600,
-    textAlign: "center",
-    whiteSpace: "nowrap",
-  }
-  const tdBase: React.CSSProperties = {
-    padding: "4px 8px",
-    fontSize: "var(--font-size-tiny)",
-    textAlign: "center",
-    borderBottom: "0.5px solid var(--color-border)",
-    verticalAlign: "middle",
-  }
-  const thStyle = (extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...thBase, background: "var(--color-mid)", ...extra })
-  const tdStyle = (extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...tdBase, ...extra })
 
   const params2 = new URLSearchParams()
   if (range) params2.set("range", range)
@@ -193,95 +175,23 @@ export default async function SetupDrilldownPage({
             </div>
 
             {/* Per-trigger table */}
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 580 }}>
-                <thead>
-                  <tr>
-                    <th style={thStyle({ textAlign: "left" })}>Trigger</th>
-                    <th style={thStyle({ width: 60 })}>Trades</th>
-                    <th style={thStyle({ width: 72 })}>Win Rate</th>
-                    <th style={thStyle({ width: 60 })}>Avg R</th>
-                    <th style={thStyle({ width: 80 })}>P&amp;L ($)</th>
-                    <th style={thStyle({ width: 76 })}>P. Factor</th>
-                    <th style={thStyle({ width: 48 })}>Long</th>
-                    <th style={thStyle({ width: 48 })}>Short</th>
-                    <th style={thStyle({ width: 48 })}>Tier A</th>
-                    <th style={thStyle({ width: 48 })}>Tier B</th>
-                    <th style={thStyle({ width: 48 })}>Tier C</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {triggerStats.map((s) => (
-                    <tr
-                      key={s.triggerId ?? "__none__"}
-                      style={{
-                        background:
-                          s.triggerId === null ? "var(--color-light)" : "var(--color-white)",
-                      }}
-                    >
-                      <td
-                        style={tdStyle({
-                          textAlign: "left",
-                          fontWeight: s.triggerId === null ? 400 : 600,
-                          color:
-                            s.triggerId === null
-                              ? "var(--color-muted)"
-                              : "var(--color-text)",
-                        })}
-                      >
-                        {s.triggerName}
-                      </td>
-                      <td style={tdStyle()}>{s.trades}</td>
-                      <td
-                        style={tdStyle({
-                          color:
-                            s.winRate !== null
-                              ? s.winRate >= 0.5
-                                ? "#2D8C4E"
-                                : "#D96060"
-                              : "var(--color-muted)",
-                        })}
-                      >
-                        {pct(s.winRate)}
-                      </td>
-                      <td
-                        style={tdStyle({
-                          color:
-                            s.avgR !== null
-                              ? s.avgR > 0
-                                ? "#2D8C4E"
-                                : s.avgR < 0
-                                ? "#D96060"
-                                : undefined
-                              : "var(--color-muted)",
-                        })}
-                      >
-                        {s.avgR !== null ? s.avgR.toFixed(2) : "—"}
-                      </td>
-                      <td
-                        style={tdStyle({
-                          color:
-                            s.totalPnL > 0
-                              ? "#2D8C4E"
-                              : s.totalPnL < 0
-                              ? "#D96060"
-                              : undefined,
-                        })}
-                      >
-                        {s.totalPnL > 0 ? "+" : ""}
-                        {s.totalPnL.toFixed(2)}
-                      </td>
-                      <td style={tdStyle()}>{pf(s.profitFactor)}</td>
-                      <td style={tdStyle()}>{s.long || "—"}</td>
-                      <td style={tdStyle()}>{s.short || "—"}</td>
-                      <td style={tdStyle()}>{s.tierA || "—"}</td>
-                      <td style={tdStyle()}>{s.tierB || "—"}</td>
-                      <td style={tdStyle()}>{s.tierC || "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <SortableStatsTable
+              rows={triggerStats.map((s): StatsRow => ({
+                id: s.triggerId,
+                name: s.triggerName,
+                trades: s.trades,
+                winRate: s.winRate,
+                avgR: s.avgR,
+                totalPnL: s.totalPnL,
+                profitFactor: s.profitFactor,
+                long: s.long,
+                short: s.short,
+                tierA: s.tierA,
+                tierB: s.tierB,
+                tierC: s.tierC,
+              }))}
+              firstColumnLabel="Trigger"
+            />
           </>
         )}
       </main>

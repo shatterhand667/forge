@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db"
 import Link from "next/link"
 import { Suspense } from "react"
 import { StatisticsFilter } from "@/components/statistics/StatisticsFilter"
+import { SortableStatsTable } from "@/components/statistics/SortableStatsTable"
+import type { StatsRow } from "@/components/statistics/SortableStatsTable"
 import { computeSetupStats, computeGlobalStats } from "@/lib/statistics"
 
 function getDateRange(
@@ -73,36 +75,6 @@ export default async function StatisticsPage({
 
   const setupStats = computeSetupStats(trades)
   const global = computeGlobalStats(trades)
-
-  const thBase: React.CSSProperties = {
-    color: "#fff",
-    padding: "5px 8px",
-    fontSize: "var(--font-size-tiny)",
-    fontWeight: 600,
-    textAlign: "center",
-    whiteSpace: "nowrap",
-  }
-  const tdBase: React.CSSProperties = {
-    padding: "4px 8px",
-    fontSize: "var(--font-size-tiny)",
-    textAlign: "center",
-    borderBottom: "0.5px solid var(--color-border)",
-    verticalAlign: "middle",
-  }
-
-  const A = "rgba(0,0,0,0.06)"
-  const B = "rgba(80,120,220,0.05)"
-  const G = {
-    setup:     "transparent",
-    trades:    A,
-    metrics:   B,
-    direction: A,
-    tiers:     B,
-  }
-  const thStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...thBase, background: "var(--color-mid)", ...extra })
-  const tdStyle = (g: keyof typeof G, extra?: React.CSSProperties): React.CSSProperties =>
-    ({ ...tdBase, background: G[g], ...extra })
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
@@ -185,66 +157,25 @@ export default async function StatisticsPage({
             </div>
 
             {/* Per-setup table */}
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 580 }}>
-                <thead>
-                  <tr>
-                    <th style={thStyle("setup",     { textAlign: "left" })}>Setup</th>
-                    <th style={thStyle("trades",    { width: 60 })}>Trades</th>
-                    <th style={thStyle("metrics",   { width: 72 })}>Win Rate</th>
-                    <th style={thStyle("metrics",   { width: 60 })}>Avg R</th>
-                    <th style={thStyle("metrics",   { width: 80 })}>P&amp;L ($)</th>
-                    <th style={thStyle("metrics",   { width: 76 })}>P. Factor</th>
-                    <th style={thStyle("direction", { width: 48 })}>Long</th>
-                    <th style={thStyle("direction", { width: 48 })}>Short</th>
-                    <th style={thStyle("tiers",     { width: 48 })}>Tier A</th>
-                    <th style={thStyle("tiers",     { width: 48 })}>Tier B</th>
-                    <th style={thStyle("tiers",     { width: 48 })}>Tier C</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {setupStats.map((s) => (
-                    <tr
-                      key={s.setupId ?? "__none__"}
-                      style={{
-                        background: s.setupId === null ? "var(--color-light)" : "var(--color-white)",
-                      }}
-                    >
-                      <td style={tdStyle("setup", { textAlign: "left", fontWeight: s.setupId === null ? 400 : 600, color: s.setupId === null ? "var(--color-muted)" : "var(--color-text)" })}>
-                        {s.setupId !== null ? (
-                          <a
-                            href={`/statistics/setup/${s.setupId}${qs ? `?${qs}` : ""}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: "inherit", textDecoration: "none", display: "block" }}
-                          >
-                            {s.setupName}
-                          </a>
-                        ) : (
-                          s.setupName
-                        )}
-                      </td>
-                      <td style={tdStyle("trades")}>{s.trades}</td>
-                      <td style={tdStyle("metrics", { color: s.winRate !== null ? (s.winRate >= 0.5 ? "#2D8C4E" : "#D96060") : "var(--color-muted)" })}>
-                        {pct(s.winRate)}
-                      </td>
-                      <td style={tdStyle("metrics", { color: s.avgR !== null ? (s.avgR > 0 ? "#2D8C4E" : s.avgR < 0 ? "#D96060" : undefined) : "var(--color-muted)" })}>
-                        {s.avgR !== null ? s.avgR.toFixed(2) : "—"}
-                      </td>
-                      <td style={tdStyle("metrics", { color: s.totalPnL > 0 ? "#2D8C4E" : s.totalPnL < 0 ? "#D96060" : undefined })}>
-                        {s.totalPnL > 0 ? "+" : ""}{s.totalPnL.toFixed(2)}
-                      </td>
-                      <td style={tdStyle("metrics")}>{pf(s.profitFactor)}</td>
-                      <td style={tdStyle("direction")}>{s.long || "—"}</td>
-                      <td style={tdStyle("direction")}>{s.short || "—"}</td>
-                      <td style={tdStyle("tiers")}>{s.tierA || "—"}</td>
-                      <td style={tdStyle("tiers")}>{s.tierB || "—"}</td>
-                      <td style={tdStyle("tiers")}>{s.tierC || "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <SortableStatsTable
+              rows={setupStats.map((s): StatsRow => ({
+                id: s.setupId,
+                name: s.setupName,
+                trades: s.trades,
+                winRate: s.winRate,
+                avgR: s.avgR,
+                totalPnL: s.totalPnL,
+                profitFactor: s.profitFactor,
+                long: s.long,
+                short: s.short,
+                tierA: s.tierA,
+                tierB: s.tierB,
+                tierC: s.tierC,
+              }))}
+              firstColumnLabel="Setup"
+              firstCellLinkBase="/statistics/setup/"
+              firstCellLinkSuffix={qs ? `?${qs}` : ""}
+            />
           </>
         )}
       </main>
