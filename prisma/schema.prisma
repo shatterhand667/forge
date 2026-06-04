@@ -97,8 +97,10 @@ model Trade {
   id              String         @id @default(cuid())
   dailyCardId     String
   dailyCard       DailyCard      @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
-  playbookSetupId String?
-  playbookSetup   PlaybookSetup? @relation(fields: [playbookSetupId], references: [id], onDelete: SetNull)
+  playbookSetupId   String?
+  playbookSetup     PlaybookSetup?   @relation(fields: [playbookSetupId], references: [id], onDelete: SetNull)
+  playbookTriggerId String?
+  playbookTrigger   PlaybookTrigger? @relation(fields: [playbookTriggerId], references: [id], onDelete: SetNull)
   time            String?
   instrument      String?
   trigger         String?
@@ -241,6 +243,7 @@ model Playbook {
   hardRules         Json?
 
   setups    PlaybookSetup[]
+  triggers  PlaybookTrigger[]
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 }
@@ -259,6 +262,18 @@ model PlaybookSetup {
   trades       Trade[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model PlaybookTrigger {
+  id          String   @id @default(cuid())
+  playbookId  String
+  playbook    Playbook @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  name        String   @default("")
+  description String?
+  order       Int      @default(0)
+  trades      Trade[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model CalibrationGoal {
