@@ -67,7 +67,7 @@ export async function mergeTrades(ids: string[], dailyCardId: string) {
 export async function addTrade(
   dailyCardId: string,
   data: {
-    time?: string; instrument?: string; trigger?: string; playbookSetupId?: string; direction?: string
+    time?: string; instrument?: string; trigger?: string; playbookSetupId?: string; playbookTriggerId?: string | null; direction?: string
     tier?: string; volume?: number; rExpected?: number; rActual?: number; profitRaw?: number; decision?: string
     emotion?: string; lessons?: string
   }
@@ -84,7 +84,7 @@ export async function addTrade(
 export async function updateTrade(
   id: string,
   data: Partial<{
-    time: string; instrument: string; trigger: string; playbookSetupId: string | null; direction: string; tier: string
+    time: string; instrument: string; trigger: string; playbookSetupId: string | null; playbookTriggerId: string | null; direction: string; tier: string
     volume: number; rExpected: number; rActual: number; profitRaw: number; decision: string; emotion: string; lessons: string
   }>
 ) {
