@@ -219,7 +219,7 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
                   right: 4,
                   display: "flex",
                   justifyContent: "space-between",
-                  fontSize: 7,
+                  fontSize: 8,
                   lineHeight: 1,
                 }}>
                   {processScore != null && (
