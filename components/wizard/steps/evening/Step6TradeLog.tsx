@@ -13,7 +13,7 @@ const TRADE_COLUMNS = [
   { id: "time",             label: "Czas",     width: "7%" },
   { id: "instrument",       label: "Instr.",   width: "8%" },
   { id: "playbookSetupId",  label: "Setup",    width: "9%" },
-  { id: "trigger",          label: "Trigger",  width: "10%", type: "textarea" as const },
+  { id: "playbookTriggerId", label: "Trigger",  width: "10%" },
   { id: "direction",        label: "Kier.",    width: "7%",  type: "select" as const, options: ["long", "short"] },
   { id: "tier",             label: "Tier",     width: "6%",  type: "select" as const, options: ["A", "B", "C"] },
   { id: "volume",           label: "Wol.",     width: "5%",  type: "number" as const },
@@ -25,15 +25,17 @@ const TRADE_COLUMNS = [
 ]
 
 type PlaybookSetup = { id: string; name: string; tier: string | null }
+type PlaybookTrigger = { id: string; name: string }
 
 interface Props {
   card: DailyCard & { trades: Trade[]; emotionEntries: any[]; screenshots: DailyCardScreenshot[] }
   date: string
   step: number
   playbookSetups: PlaybookSetup[]
+  playbookTriggers: PlaybookTrigger[]
 }
 
-export function Step6TradeLog({ card, date, step, playbookSetups }: Props) {
+export function Step6TradeLog({ card, date, step, playbookSetups, playbookTriggers }: Props) {
   const router = useRouter()
   const [trades, setTrades] = useState(card.trades)
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -281,6 +283,46 @@ export function Step6TradeLog({ card, date, step, playbookSetups }: Props) {
                             <option value="">—</option>
                             {playbookSetups.map(s => (
                               <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : col.id === "playbookTriggerId" ? (
+                        <div style={{ position: "relative" }}>
+                          <div
+                            style={{
+                              fontSize: "var(--font-size-tiny)",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              textAlign: "center",
+                              minHeight: "1.4em",
+                              padding: "2px 0",
+                              color: "var(--color-text)",
+                            }}
+                          >
+                            {playbookTriggers.find(
+                              (t) => t.id === String((trade as any).playbookTriggerId ?? "")
+                            )?.name || "—"}
+                          </div>
+                          <select
+                            value={String((trade as any).playbookTriggerId ?? "")}
+                            onChange={(e) =>
+                              handleUpdateRow(i, "playbookTriggerId", e.target.value || null)
+                            }
+                            style={{
+                              position: "absolute",
+                              inset: 0,
+                              opacity: 0,
+                              cursor: "pointer",
+                              width: "100%",
+                              height: "100%",
+                              fontSize: "var(--font-size-tiny)",
+                            }}
+                          >
+                            <option value="">—</option>
+                            {playbookTriggers.map((t) => (
+                              <option key={t.id} value={t.id}>
+                                {t.name}
+                              </option>
                             ))}
                           </select>
                         </div>

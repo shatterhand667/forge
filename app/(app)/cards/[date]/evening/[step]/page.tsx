@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getDailyCard } from "@/actions/cards"
-import { getPlaybookSetups } from "@/actions/playbook"
+import { getPlaybookSetups, getPlaybookTriggers } from "@/actions/playbook"
 import { getPrevWeekGoal } from "@/actions/calibration"
 import { Step6TradeLog } from "@/components/wizard/steps/evening/Step6TradeLog"
 import { Step7EmotionLog } from "@/components/wizard/steps/evening/Step7EmotionLog"
@@ -38,8 +38,8 @@ export default async function EveningStepPage({
   if (!card) redirect(`/cards/${date}/morning/1`)
 
   if (step === 6) {
-    const playbookSetups = await getPlaybookSetups()
-    return <Step6TradeLog card={card} date={date} step={step} playbookSetups={playbookSetups} />
+    const [playbookSetups, playbookTriggers] = await Promise.all([getPlaybookSetups(), getPlaybookTriggers()])
+    return <Step6TradeLog card={card} date={date} step={step} playbookSetups={playbookSetups} playbookTriggers={playbookTriggers} />
   }
 
   if (step === 13) {
