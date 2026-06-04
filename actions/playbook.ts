@@ -78,6 +78,12 @@ export async function updateSetup(
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthorized")
 
+  const setup = await prisma.playbookSetup.findFirst({
+    where: { id },
+    include: { playbook: { select: { userId: true } } },
+  })
+  if (!setup || setup.playbook.userId !== session.user.id) throw new Error("Not found")
+
   await prisma.playbookSetup.update({ where: { id }, data })
   revalidatePath("/dashboard")
 }
@@ -96,6 +102,12 @@ export async function getPlaybookSetups() {
 export async function deleteSetup(id: string) {
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthorized")
+
+  const setup = await prisma.playbookSetup.findFirst({
+    where: { id },
+    include: { playbook: { select: { userId: true } } },
+  })
+  if (!setup || setup.playbook.userId !== session.user.id) throw new Error("Not found")
 
   await prisma.playbookSetup.delete({ where: { id } })
   revalidatePath("/dashboard")
@@ -129,6 +141,12 @@ export async function updateTrigger(
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthorized")
 
+  const trigger = await prisma.playbookTrigger.findFirst({
+    where: { id },
+    include: { playbook: { select: { userId: true } } },
+  })
+  if (!trigger || trigger.playbook.userId !== session.user.id) throw new Error("Not found")
+
   await prisma.playbookTrigger.update({ where: { id }, data })
   revalidatePath("/dashboard")
 }
@@ -136,6 +154,12 @@ export async function updateTrigger(
 export async function deleteTrigger(id: string) {
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthorized")
+
+  const trigger = await prisma.playbookTrigger.findFirst({
+    where: { id },
+    include: { playbook: { select: { userId: true } } },
+  })
+  if (!trigger || trigger.playbook.userId !== session.user.id) throw new Error("Not found")
 
   await prisma.playbookTrigger.delete({ where: { id } })
   revalidatePath("/dashboard")
