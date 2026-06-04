@@ -186,11 +186,14 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
           const processScore = !isWeekend ? card?.processScore ?? null : weekAvgProcess
           const pnl = !isWeekend ? card?.pnl ?? null : weekTotalPnl
 
+          const darkStats = isWeekend && !weeklyStatus
+          const colorGood = darkStats ? "#16a34a" : "#4ade80"
+          const colorBad  = darkStats ? "#dc2626" : "#fca5a5"
           const processColor = processScore != null
-            ? processScore >= 6 ? "#4ade80" : "#fca5a5"
+            ? processScore >= 6 ? colorGood : colorBad
             : undefined
           const pnlColor = pnl != null
-            ? pnl > 0 ? "#4ade80" : pnl < 0 ? "#fca5a5" : undefined
+            ? pnl > 0 ? colorGood : pnl < 0 ? colorBad : undefined
             : undefined
 
           return (
