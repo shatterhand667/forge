@@ -49,6 +49,12 @@ export default async function StatisticsPage({
   const { range, from, to } = await searchParams
   const { start, end } = getDateRange(range, from, to)
 
+  const linkParams = new URLSearchParams()
+  if (range) linkParams.set("range", range)
+  if (from) linkParams.set("from", from)
+  if (to) linkParams.set("to", to)
+  const qs = linkParams.toString()
+
   const dateFilter: { gte?: Date; lt?: Date } = {}
   if (start) dateFilter.gte = start
   if (end) dateFilter.lt = end
@@ -205,7 +211,18 @@ export default async function StatisticsPage({
                       }}
                     >
                       <td style={tdStyle("setup", { textAlign: "left", fontWeight: s.setupId === null ? 400 : 600, color: s.setupId === null ? "var(--color-muted)" : "var(--color-text)" })}>
-                        {s.setupName}
+                        {s.setupId !== null ? (
+                          <a
+                            href={`/statistics/setup/${s.setupId}${qs ? `?${qs}` : ""}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "inherit", textDecoration: "none", display: "block" }}
+                          >
+                            {s.setupName}
+                          </a>
+                        ) : (
+                          s.setupName
+                        )}
                       </td>
                       <td style={tdStyle("trades")}>{s.trades}</td>
                       <td style={tdStyle("metrics", { color: s.winRate !== null ? (s.winRate >= 0.5 ? "#2D8C4E" : "#D96060") : "var(--color-muted)" })}>
