@@ -140,4 +140,37 @@ describe("computeWeeklyStats", () => {
 
     expect(stats.mentalPerDay).toEqual([7, 5, null, null, null])
   })
+
+  it("returns zero fomo/fear stats for empty week", async () => {
+    vi.mocked(prisma.dailyCard.findMany).mockResolvedValue([])
+    const stats = await computeWeeklyStats("u1", weekStart, weekEnd)
+    expect(stats.fomoSum).toBe(0)
+    expect(stats.fomoCount).toBe(0)
+    expect(stats.fearSum).toBe(0)
+    expect(stats.fearCount).toBe(0)
+  })
+
+  it("sums fomoLoss and fearLoss, counts only non-null days", async () => {
+    vi.mocked(prisma.dailyCard.findMany).mockResolvedValue([
+      {
+        date: new Date("2026-05-05"), sleep: null, processScore: null, pl: null, mentalAfter: null,
+        fomoLoss: -100, fearLoss: -50, trades: [],
+      } as any,
+      {
+        date: new Date("2026-05-06"), sleep: null, processScore: null, pl: null, mentalAfter: null,
+        fomoLoss: -250, fearLoss: null, trades: [],
+      } as any,
+      {
+        date: new Date("2026-05-07"), sleep: null, processScore: null, pl: null, mentalAfter: null,
+        fomoLoss: null, fearLoss: null, trades: [],
+      } as any,
+    ])
+
+    const stats = await computeWeeklyStats("u1", weekStart, weekEnd)
+
+    expect(stats.fomoSum).toBeCloseTo(-350)
+    expect(stats.fomoCount).toBe(2)
+    expect(stats.fearSum).toBeCloseTo(-50)
+    expect(stats.fearCount).toBe(1)
+  })
 })

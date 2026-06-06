@@ -29,6 +29,10 @@ export interface WeeklyStats {
   processAvg: number | null
   mentalAvg: number | null
   overallAvg: number | null
+  fomoSum: number
+  fomoCount: number
+  fearSum: number
+  fearCount: number
 }
 
 interface TierStats {
@@ -125,6 +129,11 @@ export async function computeWeeklyStats(
     }
   }
 
+  const fomoSum = Math.round(cards.reduce((sum, c) => sum + (c.fomoLoss ?? 0), 0) * 100) / 100
+  const fomoCount = cards.filter((c) => c.fomoLoss !== null).length
+  const fearSum = Math.round(cards.reduce((sum, c) => sum + (c.fearLoss ?? 0), 0) * 100) / 100
+  const fearCount = cards.filter((c) => c.fearLoss !== null).length
+
   return {
     sessionCount: cards.length,
     trades: allTrades.length,
@@ -150,5 +159,9 @@ export async function computeWeeklyStats(
     processAvg: avg(Object.values(byDay).map((d) => d.processScore)),
     mentalAvg: avg(Object.values(byDay).map((d) => d.mentalAfter)),
     overallAvg: avg(cards.map((c) => c.overallScore)),
+    fomoSum,
+    fomoCount,
+    fearSum,
+    fearCount,
   }
 }
