@@ -5,6 +5,7 @@ import { WizardLayout } from "@/components/wizard/WizardLayout"
 import { SectionHeader } from "@/components/forge"
 import { AutoTextarea } from "@/components/forge/TableInput"
 import { addEmotionEntry, updateEmotionEntry, deleteEmotionEntry } from "@/actions/emotions"
+import { updateDailyCard } from "@/actions/cards"
 import type { DailyCard, EmotionEntry } from "@prisma/client"
 
 const EMOTION_COLUMNS = [
@@ -28,6 +29,12 @@ interface Props {
 export function Step7EmotionLog({ card, date, step }: Props) {
   const [entries, setEntries] = useState(card.emotionEntries)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [fomoLoss, setFomoLoss] = useState<string>(
+    card.fomoLoss !== null && card.fomoLoss !== undefined ? String(card.fomoLoss) : ""
+  )
+  const [fearLoss, setFearLoss] = useState<string>(
+    card.fearLoss !== null && card.fearLoss !== undefined ? String(card.fearLoss) : ""
+  )
 
   async function handleAddRow() {
     const newEntry = await addEmotionEntry(card.id, {})
@@ -63,6 +70,18 @@ export function Step7EmotionLog({ card, date, step }: Props) {
     await Promise.all(ids.map((id) => deleteEmotionEntry(id)))
     setEntries((prev) => prev.filter((e) => !ids.includes(e.id)))
     setSelected(new Set())
+  }
+
+  async function handleSaveFomoLoss(value: string) {
+    const num = value === "" ? null : parseFloat(value)
+    if (num !== null && isNaN(num)) return
+    await updateDailyCard(card.id, num !== null ? { fomoLoss: num } : {})
+  }
+
+  async function handleSaveFearLoss(value: string) {
+    const num = value === "" ? null : parseFloat(value)
+    if (num !== null && isNaN(num)) return
+    await updateDailyCard(card.id, num !== null ? { fearLoss: num } : {})
   }
 
   return (
@@ -214,6 +233,38 @@ export function Step7EmotionLog({ card, date, step }: Props) {
           >
             + Dodaj emocję
           </button>
+
+          <div className="flex flex-col gap-2 mt-3">
+            {(
+              [
+                { label: "Ile straciłeś przez FOMO?", value: fomoLoss, setValue: setFomoLoss, onSave: handleSaveFomoLoss },
+                { label: "Ile straciłeś przez strach?", value: fearLoss, setValue: setFearLoss, onSave: handleSaveFearLoss },
+              ] as const
+            ).map(({ label, value, setValue, onSave }) => (
+              <div key={label} className="flex items-center gap-3">
+                <span style={{ minWidth: 220, fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>
+                  {label}
+                </span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={value}
+                  placeholder="—"
+                  onChange={(e) => setValue(e.target.value)}
+                  onBlur={() => onSave(value)}
+                  className="border-none outline-none"
+                  style={{
+                    width: 100,
+                    fontSize: "var(--font-size-tiny)",
+                    background: "rgba(0,0,0,0.03)",
+                    borderRadius: 2,
+                    padding: "2px 6px",
+                    borderBottom: "1px solid var(--color-border)",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </WizardLayout>
