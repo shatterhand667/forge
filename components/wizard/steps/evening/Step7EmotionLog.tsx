@@ -75,13 +75,13 @@ export function Step7EmotionLog({ card, date, step }: Props) {
   async function handleSaveFomoLoss(value: string) {
     const num = value === "" ? null : parseFloat(value)
     if (num !== null && isNaN(num)) return
-    await updateDailyCard(card.id, num !== null ? { fomoLoss: num } : {})
+    await updateDailyCard(card.id, { fomoLoss: num })
   }
 
   async function handleSaveFearLoss(value: string) {
     const num = value === "" ? null : parseFloat(value)
     if (num !== null && isNaN(num)) return
-    await updateDailyCard(card.id, num !== null ? { fearLoss: num } : {})
+    await updateDailyCard(card.id, { fearLoss: num })
   }
 
   return (
@@ -252,7 +252,7 @@ export function Step7EmotionLog({ card, date, step }: Props) {
                   placeholder="—"
                   onChange={(e) => setValue(e.target.value)}
                   onBlur={() => onSave(value)}
-                  className="border-none outline-none"
+                  className="border-none outline-none no-spinner"
                   style={{
                     width: 100,
                     fontSize: "var(--font-size-tiny)",
