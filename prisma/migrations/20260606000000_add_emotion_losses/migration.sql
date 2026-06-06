@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "DailyCard" ADD COLUMN "fomoLoss" DOUBLE PRECISION;
+ALTER TABLE "DailyCard" ADD COLUMN "fearLoss" DOUBLE PRECISION;

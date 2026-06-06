@@ -71,6 +71,8 @@ model DailyCard {
   riskScore        Int?
   psychologyScore  Int?
   disciplineScore  Int?
+  fomoLoss      Float?
+  fearLoss      Float?
 
   trades         Trade[]
   emotionEntries EmotionEntry[]
