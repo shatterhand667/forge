@@ -46,6 +46,7 @@ export async function updateDailyCard(
     maxDailyDrawdown: string; dailyMaxRisk: string
     proudOf: string; ashamedOf: string; tomorrowRemember: string; todayInOneSentence: string
     setupsScore: number; executionScore: number; riskScore: number; psychologyScore: number; disciplineScore: number
+    fomoLoss: number; fearLoss: number
     status: CardStatus
   }>
 ) {
