@@ -278,6 +278,30 @@ export function WeeklyStep1Stats({ review, stats, weekStart, step, weekLessons }
             </div>
           </div>
         )}
+        {(stats.fomoCount > 0 || stats.fearCount > 0) && (
+          <div className="flex flex-col gap-0 mt-2">
+            <SectionHeader number="1C" title="STRATY EMOCJONALNE" />
+            <BridgeIndicator source="z kart dziennych" />
+            <div className="flex flex-col gap-1 mt-2">
+              {stats.fomoCount > 0 && (
+                <div className="flex items-center gap-2">
+                  <span style={{ minWidth: 60, fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>FOMO:</span>
+                  <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-text)" }}>
+                    {stats.fomoSum} ({stats.fomoCount} {stats.fomoCount === 1 ? "dzień" : "dni"})
+                  </span>
+                </div>
+              )}
+              {stats.fearCount > 0 && (
+                <div className="flex items-center gap-2">
+                  <span style={{ minWidth: 60, fontSize: "var(--font-size-tiny)", color: "var(--color-muted)" }}>Strach:</span>
+                  <span style={{ fontSize: "var(--font-size-tiny)", color: "var(--color-text)" }}>
+                    {stats.fearSum} ({stats.fearCount} {stats.fearCount === 1 ? "dzień" : "dni"})
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </WeeklyLayout>
   )
