@@ -59,6 +59,14 @@ export async function setCardTags(cardId: string, tagIds: string[]) {
   const card = await prisma.dailyCard.findFirst({ where: { id: cardId, userId } })
   if (!card) throw new Error("Card not found")
 
+  if (tagIds.length > 0) {
+    const ownedTags = await prisma.dayTag.findMany({
+      where: { id: { in: tagIds }, userId },
+      select: { id: true },
+    })
+    if (ownedTags.length !== tagIds.length) throw new Error("Invalid tag(s)")
+  }
+
   await prisma.$transaction([
     prisma.dailyCardDayTag.deleteMany({ where: { dailyCardId: cardId } }),
     ...(tagIds.length > 0
