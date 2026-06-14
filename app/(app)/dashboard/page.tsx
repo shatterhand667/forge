@@ -10,7 +10,7 @@ import { CalibrationView } from "@/components/dashboard/CalibrationView"
 import { getPlaybook } from "@/actions/playbook"
 import { getCalibrationGoals } from "@/actions/calibration"
 import { TagsView } from "@/components/dashboard/TagsView"
-import { getUserTags, getTagWithCards } from "@/actions/tags"
+import { getUserTags } from "@/actions/tags"
 
 function getWeekStartStr(date: Date): string {
   const dow = date.getUTCDay()
@@ -27,7 +27,7 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ page?: string; tab?: string; tag?: string }>
 }) {
-  const { page: pageParam, tab, tag: tagId } = await searchParams
+  const { page: pageParam, tab } = await searchParams
   const activeTab = tab === "playbook" ? "playbook" : tab === "kalibracja" ? "kalibracja" : tab === "tagi" ? "tagi" : "historia"
   const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10))
   const session = await auth()
@@ -76,10 +76,7 @@ export default async function DashboardPage({
     getCalibrationGoals(),
   ])
 
-  const [userTags, selectedTagData] = await Promise.all([
-    activeTab === "tagi" ? getUserTags() : Promise.resolve([]),
-    activeTab === "tagi" && tagId ? getTagWithCards(tagId) : Promise.resolve(null),
-  ])
+  const userTags = activeTab === "tagi" ? await getUserTags() : []
 
   const allCards = allCardsRaw.map((c) => {
     const tradesWithPnl = c.trades.filter((t) => t.profitRaw != null)
@@ -260,10 +257,7 @@ export default async function DashboardPage({
             <PlaybookView playbook={playbook as any} />
           )}
           {activeTab === "tagi" && (
-            <TagsView
-              tags={userTags as any}
-              selectedTag={selectedTagData as any}
-            />
+            <TagsView tags={userTags as any} />
           )}
         </section>
       </main>

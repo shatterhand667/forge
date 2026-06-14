@@ -19,17 +19,15 @@ export function DayTagSelector({ cardId, allTags, initialTagIds }: Props) {
   const [, startTransition] = useTransition()
 
   function toggle(tagId: string) {
-    setSelectedIds((prev) => {
-      let next: string[]
-      if (prev.includes(tagId)) {
-        next = prev.filter((id) => id !== tagId)
-      } else {
-        if (prev.length >= 3) return prev
-        next = [...prev, tagId]
-      }
-      startTransition(() => { setCardTags(cardId, next) })
-      return next
-    })
+    let next: string[]
+    if (selectedIds.includes(tagId)) {
+      next = selectedIds.filter((id) => id !== tagId)
+    } else {
+      if (selectedIds.length >= 3) return
+      next = [...selectedIds, tagId]
+    }
+    setSelectedIds(next)
+    startTransition(() => { setCardTags(cardId, next) })
   }
 
   if (allTags.length === 0) {

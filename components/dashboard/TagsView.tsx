@@ -9,26 +9,12 @@ type TagWithCount = {
   _count: { cards: number }
 }
 
-type CardEntry = {
-  dailyCard: {
-    date: Date
-    processScore: number | null
-    trades: { profitRaw: number | null }[]
-  }
-}
-
-type TagDetail = {
-  id: string
-  name: string
-  cards: CardEntry[]
-}
 
 interface Props {
   tags: TagWithCount[]
-  selectedTag: TagDetail | null
 }
 
-export function TagsView({ tags, selectedTag }: Props) {
+export function TagsView({ tags }: Props) {
   const [newTagName, setNewTagName] = useState("")
   const [error, setError] = useState("")
   const [, startTransition] = useTransition()
@@ -51,62 +37,6 @@ export function TagsView({ tags, selectedTag }: Props) {
   function handleDelete(tagId: string, name: string) {
     if (!confirm(`Usunąć tag "${name}"? Zostanie usunięty ze wszystkich kart.`)) return
     startTransition(async () => { await deleteTag(tagId) })
-  }
-
-  if (selectedTag) {
-    const rows = selectedTag.cards
-      .map((entry) => {
-        const tradesWithPnl = entry.dailyCard.trades.filter((t) => t.profitRaw != null)
-        const pnl = tradesWithPnl.length > 0
-          ? Math.round(tradesWithPnl.reduce((sum, t) => sum + t.profitRaw!, 0))
-          : null
-        const d = new Date(entry.dailyCard.date)
-        const dateLabel = `${String(d.getUTCDate()).padStart(2, "0")}.${String(d.getUTCMonth() + 1).padStart(2, "0")}.${d.getUTCFullYear()}`
-        const dateStr = d.toISOString().split("T")[0]
-        return { dateStr, dateLabel, pnl, processScore: entry.dailyCard.processScore }
-      })
-      .sort((a, b) => b.dateStr.localeCompare(a.dateStr))
-
-    return (
-      <div>
-        <a href="/dashboard?tab=tagi" style={{ color: "#4A9EE2", fontSize: "var(--font-size-tiny)" }}>
-          ← Wszystkie tagi
-        </a>
-        <h2 style={{ marginTop: 12, marginBottom: 12, fontWeight: 700, fontSize: "var(--font-size-body)", textTransform: "uppercase" }}>
-          {selectedTag.name} — {selectedTag.cards.length} {selectedTag.cards.length === 1 ? "dzień" : "dni"}
-        </h2>
-        {rows.length === 0 ? (
-          <p style={{ color: "var(--color-muted)", fontSize: "var(--font-size-tiny)" }}>Brak dni z tym tagiem.</p>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                {["Data", "P&L", "Proces"].map((h) => (
-                  <th key={h} style={{ textAlign: "left", fontSize: "var(--font-size-tiny)", color: "var(--color-muted)", paddingBottom: 6, fontWeight: 700 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(({ dateStr, dateLabel, pnl, processScore }) => (
-                <tr key={dateStr} style={{ borderTop: "1px solid var(--color-border)" }}>
-                  <td style={{ padding: "7px 0", fontSize: "var(--font-size-tiny)" }}>
-                    <a href={`/cards/${dateStr}/complete`} target="_blank" rel="noopener noreferrer" style={{ color: "#4A9EE2" }}>
-                      {dateLabel}
-                    </a>
-                  </td>
-                  <td style={{ padding: "7px 0", fontSize: "var(--font-size-tiny)", color: pnl == null ? "var(--color-muted)" : pnl >= 0 ? "#16a34a" : "#dc2626" }}>
-                    {pnl == null ? "—" : `${pnl >= 0 ? "+" : ""}€${pnl}`}
-                  </td>
-                  <td style={{ padding: "7px 0", fontSize: "var(--font-size-tiny)", color: "var(--color-text)" }}>
-                    {processScore != null ? `${processScore}/10` : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    )
   }
 
   return (
@@ -160,7 +90,9 @@ export function TagsView({ tags, selectedTag }: Props) {
               }}
             >
               <a
-                href={`/dashboard?tab=tagi&tag=${tag.id}`}
+                href={`/tags/${tag.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{ flex: 1, fontSize: "var(--font-size-tiny)", color: "var(--color-text)", textDecoration: "none" }}
               >
                 {tag.name}
