@@ -16,6 +16,7 @@ model User {
   weeklyReviews    WeeklyReview[]
   calibrationGoals CalibrationGoal[]
   playbook         Playbook?
+  dayTags          DayTag[]
 }
 
 model DailyCard {
@@ -77,6 +78,7 @@ model DailyCard {
   trades         Trade[]
   emotionEntries EmotionEntry[]
   screenshots    DailyCardScreenshot[]
+  dayTags        DailyCardDayTag[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -276,6 +278,24 @@ model PlaybookTrigger {
   trades      Trade[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model DayTag {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime          @default(now())
+  cards     DailyCardDayTag[]
+  @@unique([userId, name])
+}
+
+model DailyCardDayTag {
+  dailyCardId String
+  dayTagId    String
+  dailyCard   DailyCard @relation(fields: [dailyCardId], references: [id], onDelete: Cascade)
+  dayTag      DayTag    @relation(fields: [dayTagId], references: [id], onDelete: Cascade)
+  @@id([dailyCardId, dayTagId])
 }
 
 model CalibrationGoal {
