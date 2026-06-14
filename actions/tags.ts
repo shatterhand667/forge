@@ -53,14 +53,20 @@ export async function deleteTag(tagId: string) {
 export async function setCardTags(cardId: string, tagIds: string[]) {
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthorized")
+  const userId = session.user.id
   if (tagIds.length > 3) throw new Error("Max 3 tags per day")
 
-  await prisma.dailyCardDayTag.deleteMany({ where: { dailyCardId: cardId } })
-  if (tagIds.length > 0) {
-    await prisma.dailyCardDayTag.createMany({
-      data: tagIds.map((dayTagId) => ({ dailyCardId: cardId, dayTagId })),
-    })
-  }
+  const card = await prisma.dailyCard.findFirst({ where: { id: cardId, userId } })
+  if (!card) throw new Error("Card not found")
+
+  await prisma.$transaction([
+    prisma.dailyCardDayTag.deleteMany({ where: { dailyCardId: cardId } }),
+    ...(tagIds.length > 0
+      ? [prisma.dailyCardDayTag.createMany({
+          data: tagIds.map((dayTagId) => ({ dailyCardId: cardId, dayTagId })),
+        })]
+      : []),
+  ])
   revalidatePath("/dashboard")
 }
 
