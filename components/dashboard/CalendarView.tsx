@@ -15,6 +15,7 @@ interface CalendarViewProps {
   initialMonth: number
   allCards: CalendarCard[]
   weeklyReviews: Record<string, "IN_PROGRESS" | "COMPLETED">
+  dayTags?: Record<string, string[]>
 }
 
 const DAY_LABELS = ["Pn", "Wt", "Śr", "Czw", "Pt", "Sb", "Nd"]
@@ -30,7 +31,7 @@ const WEEKLY_COLORS = {
   IN_PROGRESS: "#D96060",
 }
 
-export function CalendarView({ initialYear, initialMonth, allCards, weeklyReviews }: CalendarViewProps) {
+export function CalendarView({ initialYear, initialMonth, allCards, weeklyReviews, dayTags = {} }: CalendarViewProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
 
@@ -202,7 +203,7 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
               href={href}
               data-testid={`day-${dateStr}`}
               data-status={status ?? "none"}
-              className="flex items-center justify-center rounded aspect-square text-center"
+              className="flex items-center justify-center rounded aspect-square text-center group"
               style={{
                 fontSize: "var(--font-size-tiny)",
                 background,
@@ -210,6 +211,39 @@ export function CalendarView({ initialYear, initialMonth, allCards, weeklyReview
                 position: "relative",
               }}
             >
+              {!isWeekend && dayTags[dateStr] && dayTags[dateStr].length > 0 && (
+                <span
+                  data-testid={`day-tag-dot-${dateStr}`}
+                  style={{ position: "absolute", top: 3, left: 3, zIndex: 2 }}
+                >
+                  <span style={{
+                    display: "block",
+                    width: 5,
+                    height: 5,
+                    borderRadius: "50%",
+                    background: "#4A9EE2",
+                    boxShadow: "0 0 0 1px rgba(255,255,255,0.6)",
+                  }} />
+                  <span
+                    className="hidden group-hover:block"
+                    style={{
+                      position: "absolute",
+                      bottom: "calc(100% + 4px)",
+                      left: 0,
+                      whiteSpace: "nowrap",
+                      fontSize: 9,
+                      background: "var(--color-mid)",
+                      color: "#fff",
+                      padding: "2px 5px",
+                      borderRadius: 2,
+                      zIndex: 10,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {dayTags[dateStr].join(", ")}
+                  </span>
+                </span>
+              )}
               {day}
               {(processScore != null || pnl != null) && (
                 <span style={{

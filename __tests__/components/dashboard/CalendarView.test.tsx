@@ -27,4 +27,30 @@ describe("CalendarView", () => {
     const day5 = screen.getByTestId("day-2026-05-05")
     expect(day5).toHaveAttribute("data-status", "MORNING")
   })
+
+  it("shows blue dot for days with tags", () => {
+    render(
+      <CalendarView
+        initialYear={2026}
+        initialMonth={5}
+        allCards={allCards}
+        weeklyReviews={weeklyReviews}
+        dayTags={{ "2026-05-04": ["Skupiony", "FOMO"] }}
+      />
+    )
+    expect(screen.getByTestId("day-tag-dot-2026-05-04")).toBeInTheDocument()
+  })
+
+  it("shows no dot for days without tags", () => {
+    render(
+      <CalendarView
+        initialYear={2026}
+        initialMonth={5}
+        allCards={allCards}
+        weeklyReviews={weeklyReviews}
+        dayTags={{ "2026-05-04": ["Skupiony"] }}
+      />
+    )
+    expect(screen.queryByTestId("day-tag-dot-2026-05-03")).not.toBeInTheDocument()
+  })
 })
