@@ -1,7 +1,11 @@
 import Link from "next/link"
+import { auth } from "@/auth"
+import { prisma } from "@/lib/db"
 import { getDailyCard } from "@/actions/cards"
+import { getUserTags } from "@/actions/tags"
 import { redirect } from "next/navigation"
 import { MentorCommentForm } from "@/components/dashboard/MentorCommentForm"
+import { DayTagSelector } from "@/components/cards/DayTagSelector"
 
 export default async function CompletePage({
   params,
@@ -11,6 +15,20 @@ export default async function CompletePage({
   const { date } = await params
   const card = await getDailyCard(date)
   if (!card || card.status !== "COMPLETED") redirect(`/cards/${date}/morning/1`)
+
+  const session = await auth()
+  const userId = session!.user.id
+
+  const [allTags, cardTagLinks] = await Promise.all([
+    getUserTags(),
+    prisma.dailyCardDayTag.findMany({
+      where: { dailyCardId: card.id },
+      select: { dayTagId: true },
+    }),
+  ])
+
+  const initialTagIds = cardTagLinks.map((t) => t.dayTagId)
+  const tagProps = allTags.map((t) => ({ id: t.id, name: t.name }))
 
   return (
     <div
@@ -36,6 +54,8 @@ export default async function CompletePage({
       </div>
 
       <MentorCommentForm cardId={card.id} initialComment={card.mentorComment} />
+
+      <DayTagSelector cardId={card.id} allTags={tagProps} initialTagIds={initialTagIds} />
 
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 300 }}>
         <a
