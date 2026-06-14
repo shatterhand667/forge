@@ -9,6 +9,8 @@ import { PlaybookView } from "@/components/dashboard/PlaybookView"
 import { CalibrationView } from "@/components/dashboard/CalibrationView"
 import { getPlaybook } from "@/actions/playbook"
 import { getCalibrationGoals } from "@/actions/calibration"
+import { TagsView } from "@/components/dashboard/TagsView"
+import { getUserTags, getTagWithCards } from "@/actions/tags"
 
 function getWeekStartStr(date: Date): string {
   const dow = date.getUTCDay()
@@ -23,10 +25,10 @@ const WEEKS_PER_PAGE = 8
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; tab?: string }>
+  searchParams: Promise<{ page?: string; tab?: string; tag?: string }>
 }) {
-  const { page: pageParam, tab } = await searchParams
-  const activeTab = tab === "playbook" ? "playbook" : tab === "kalibracja" ? "kalibracja" : "historia"
+  const { page: pageParam, tab, tag: tagId } = await searchParams
+  const activeTab = tab === "playbook" ? "playbook" : tab === "kalibracja" ? "kalibracja" : tab === "tagi" ? "tagi" : "historia"
   const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10))
   const session = await auth()
   const userId = session!.user.id
@@ -59,6 +61,7 @@ export default async function DashboardPage({
         status: true,
         processScore: true,
         trades: { select: { profitRaw: true } },
+        dayTags: { select: { dayTag: { select: { name: true } } } },
       },
     }),
     prisma.weeklyReview.findUnique({
@@ -73,6 +76,11 @@ export default async function DashboardPage({
     getCalibrationGoals(),
   ])
 
+  const [userTags, selectedTagData] = await Promise.all([
+    activeTab === "tagi" ? getUserTags() : Promise.resolve([]),
+    activeTab === "tagi" && tagId ? getTagWithCards(tagId) : Promise.resolve(null),
+  ])
+
   const allCards = allCardsRaw.map((c) => {
     const tradesWithPnl = c.trades.filter((t) => t.profitRaw != null)
     return {
@@ -84,6 +92,14 @@ export default async function DashboardPage({
         : null,
     }
   })
+
+  const dayTagsMap: Record<string, string[]> = {}
+  for (const c of allCardsRaw) {
+    if (c.dayTags.length > 0) {
+      const dateStr = new Date(c.date).toISOString().split("T")[0]
+      dayTagsMap[dateStr] = c.dayTags.map((dt) => dt.dayTag.name)
+    }
+  }
 
   const pastCards = allCards.filter((c) => new Date(c.date) < weekStartDate)
 
@@ -181,6 +197,7 @@ export default async function DashboardPage({
             initialMonth={now.getMonth() + 1}
             allCards={allCards}
             weeklyReviews={weeklyReviewMap}
+            dayTags={dayTagsMap}
           />
         </section>
 
@@ -191,6 +208,7 @@ export default async function DashboardPage({
               { key: "historia", label: "Historia", href: "/dashboard" },
               { key: "kalibracja", label: "Kalibracja", href: "/dashboard?tab=kalibracja" },
               { key: "playbook", label: "Playbook", href: "/dashboard?tab=playbook" },
+              { key: "tagi", label: "Tagi", href: "/dashboard?tab=tagi" },
             ] as const).map(({ key, label, href }) => (
               <a
                 key={key}
@@ -240,6 +258,12 @@ export default async function DashboardPage({
           )}
           {activeTab === "playbook" && (
             <PlaybookView playbook={playbook as any} />
+          )}
+          {activeTab === "tagi" && (
+            <TagsView
+              tags={userTags as any}
+              selectedTag={selectedTagData as any}
+            />
           )}
         </section>
       </main>
