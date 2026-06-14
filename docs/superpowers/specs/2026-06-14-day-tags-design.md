@@ -124,7 +124,21 @@ getTagWithCards(tagId, userId): Promise<DayTag & { cards: (DailyCardDayTag & { d
 
 ---
 
-## 6. Out of Scope
+## 6. Default Tags (Seed Data)
+
+When a new user first opens the Tagi tab (or on first app load for existing users with no tags), 5 default tags are created automatically:
+
+1. Skupiony
+2. Cierpliwy
+3. W strefie
+4. FOMO
+5. Strach
+
+Seed logic: in `getUserTags` — if the returned list is empty, create these 5 tags for the user and return them. This runs once silently, no special onboarding UI needed.
+
+---
+
+## 7. Out of Scope
 
 - Tag renaming (delete + recreate)
 - Tag reordering (alphabetical is fixed)
